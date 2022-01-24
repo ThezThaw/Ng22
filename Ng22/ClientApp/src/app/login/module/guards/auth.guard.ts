@@ -25,7 +25,7 @@ export class AuthGuard implements CanActivate {
     | boolean
     | UrlTree {
 
-    return this.authService.isloggedIn_isValidToken().pipe(map(ok => {
+    return this.authService.isloggedIn_isValidToken(false, false).pipe(map(ok => {
       if (ok) {
         return true;
       } else {

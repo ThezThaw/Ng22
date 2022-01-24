@@ -4,7 +4,8 @@ import { HttpClient } from '@angular/common/http';
 import { BehaviorSubject, Observable, of, Subscription } from 'rxjs';
 import { map, tap, delay, finalize } from 'rxjs/operators';
 import { AppConfigService } from 'src/app/shared/services/appconfig.service';
-import { AppUser, LoginRequest, LoginResult } from '../models/login.data';
+import { AppUser, LoginRequest, LoginResult } from '../../../shared/models/login.data';
+import { MissionService } from '../../../shared/services/mission.service';
 
 @Injectable({
   providedIn: 'root',
@@ -13,6 +14,8 @@ export class AuthService implements OnDestroy {
   private timer: Subscription;
   private _user = new BehaviorSubject<AppUser>(null);
   user$: Observable<AppUser> = this._user.asObservable();
+
+
 
   private storageEventListener(event: StorageEvent) {
     if (event.storageArea === localStorage) {
@@ -23,7 +26,8 @@ export class AuthService implements OnDestroy {
   }
 
   constructor(private router: Router, private http: HttpClient,
-    private appCfgSvc: AppConfigService) {
+    private appCfgSvc: AppConfigService,
+    private missionSvc: MissionService) {
     window.addEventListener('storage', this.storageEventListener.bind(this));
   }
 
@@ -31,16 +35,14 @@ export class AuthService implements OnDestroy {
     window.removeEventListener('storage', this.storageEventListener.bind(this));
   }
 
-  isloggedIn_isValidToken(isStartup: boolean = false): any {
-    //const login_event = localStorage.getItem('login-event');
-    //if (!login_event) return of(false);
-
-    const token = localStorage.getItem('token');
+  isloggedIn_isValidToken(isL2token: boolean, isStartup: boolean): any {
+    const token = localStorage.getItem(isL2token ? 'token-l2' : 'token');
     if (token) {
-
-      const expires = this.getExpire();
+      const expires = this.getExpire(token);
       if (expires < (new Date)) {
-        this.router.navigate(['login']);
+        if (!isL2token) {
+          this.router.navigate(['login']);
+        }        
         return of(false);
       }
 
@@ -53,7 +55,7 @@ export class AuthService implements OnDestroy {
     }
   }
 
-  getUserInfo(): any {    
+  getUserInfo(): Observable<AppUser> {
 
     if (this._user.value) return this.user$;
     return this.http.get<AppUser>(`${this.appCfgSvc.cfg["baseUrl"]}api/auth/get-user`).pipe(map(x => {
@@ -61,7 +63,7 @@ export class AuthService implements OnDestroy {
         userId: x.userId,
         nickName: x.nickName
       });
-      return this.user$;
+      return x;
     }));
   }
 
@@ -72,13 +74,14 @@ export class AuthService implements OnDestroy {
       password: password
     }
     return this.http
-      .post<LoginResult>(`${this.appCfgSvc.cfg["baseUrl"]}api/auth/token`, vm)
+      .post<LoginResult>(`${this.appCfgSvc.cfg["baseUrl"]}api/auth/token-l1`, vm)
       .pipe(
         map((x) => {
           this._user.next({
             userId: x.userInfo.userId,
             nickName: x.userInfo.nickName
           });
+          this.missionSvc.setMission(x.missions);
           this.setLocalStorage(x);
           this.startTokenTimer();
           return x;
@@ -91,25 +94,26 @@ export class AuthService implements OnDestroy {
     this.finishLogout();
   }
 
-  finishLogout() {
-    this._user.next(null);
+  finishLogout() {    
+    this._user.next(null);    
     this.stopTokenTimer();
     this.router.navigate(['login']);
   }
 
   setLocalStorage(x: LoginResult) {
     localStorage.setItem('token', x.token);
-    localStorage.setItem('login-event', 'login' + Math.random());
+    //localStorage.setItem('login-event', 'login' + Math.random());
   }
 
   clearLocalStorage() {
     localStorage.removeItem('token');
-    localStorage.removeItem('login-event');
+    //localStorage.removeItem('login-event');
+    localStorage.removeItem('token-l2');
     localStorage.setItem('logout-event', 'logout' + Math.random());
   }
 
-  private getExpire() {
-    const token = localStorage.getItem('token');
+  private getExpire(token:string = null) {
+    token = token ? token : localStorage.getItem('token');
     if (!token) {
       return null;
     }

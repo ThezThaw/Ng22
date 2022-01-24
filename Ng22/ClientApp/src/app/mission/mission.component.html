@@ -1,0 +1,11 @@
+<mat-accordion>
+  <mat-expansion-panel *ngFor="let m of missions;let idx = index;" #panel>
+    <mat-expansion-panel-header>
+      <mat-panel-title>
+        {{m.name}}
+      </mat-panel-title>
+    </mat-expansion-panel-header>    
+    <mission-details *ngIf="panel.expanded"></mission-details>
+  </mat-expansion-panel>
+  <br />
+</mat-accordion>

@@ -20,18 +20,18 @@ export class UnauthorizedInterceptor implements HttpInterceptor {
     next: HttpHandler
   ): Observable<HttpEvent<unknown>> {
     return next.handle(request).pipe(
-      catchError((err) => {
-        if (err.status === 401) {
-          this.authService.clearLocalStorage();
-          this.router.navigate(['login']);
-        }
+      //catchError((err) => {
+      //  if (err.status === 401) {
+      //    this.authService.clearLocalStorage();
+      //    this.router.navigate(['login']);
+      //  }
 
-        if (!environment.production) {
-          console.error(err);
-        }
-        const error = (err && err.error && err.error.message) || err.statusText;
-        return throwError(error);
-      })
+      //  if (!environment.production) {
+      //    console.error(err);
+      //  }
+      //  const error = (err && err.error && err.error.message) || err.statusText;
+      //  return throwError(error);
+      //})
     );
   }
 }

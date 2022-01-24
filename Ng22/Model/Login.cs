@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 
 namespace Ng22.Model
 {
@@ -12,5 +13,13 @@ namespace Ng22.Model
     {
         public string token { get; set; }
         public UserInfoVm userInfo { get; set; }
+        public List<Mission> missions { get; set; }
+
+    }
+
+    public class LoginResultL2Vm
+    {
+        public string token { get; set; }
+        public MissionDetails missionDetails { get; set; }
     }
 }

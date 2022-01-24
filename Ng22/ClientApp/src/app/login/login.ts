@@ -23,7 +23,7 @@ export class LoginComponent implements OnInit, OnDestroy {
   ) {}
 
   ngOnInit(): void {
-    this.subscription = this.authService.isloggedIn_isValidToken().subscribe(ok => {
+    this.subscription = this.authService.isloggedIn_isValidToken(false, false).subscribe(ok => {
       if (ok) {
         this.router.navigate(['']);
       }      

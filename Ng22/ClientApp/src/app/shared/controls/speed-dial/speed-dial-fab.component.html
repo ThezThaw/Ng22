@@ -1,0 +1,22 @@
+<div class="fab-container">
+  <!--<button mat-fab class="fab-toggler"
+          (click)="onToggleFab()">
+    <i class="material-icons" [@fabToggler]="{value: fabTogglerState}">add</i>
+  </button>-->
+
+  <button mat-fab class="fab-toggler" color="primary" type="button"
+          (click)="onClick()">
+    <mat-icon [@fabToggler]="{value: fabTogglerState}"
+              style="font-weight:bolder">{{btn.length == 1 ? btn[0].icon : 'apps'}}</mat-icon>
+  </button>
+
+  <div [@speedDialStagger]="buttons.length">
+    <button *ngFor="let b of buttons"
+            mat-mini-fab
+            class="fab-secondary"
+            color="primary"
+            (click)="onSubClick(b.func)">
+      <i class="material-icons">{{b.icon}}</i>
+    </button>
+  </div>
+</div>

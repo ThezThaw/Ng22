@@ -8,6 +8,7 @@ using Microsoft.Extensions.Hosting;
 using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
 using Ng22.Helper;
+using Ng22.Resource;
 using System;
 using System.Collections.Generic;
 using System.Text;
@@ -28,17 +29,50 @@ namespace Ng22
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
+            services.AddScoped<IMissionResource, MissionResource>();
+
             services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
-                    .AddJwtBearer(x =>
+                    .AddJwtBearer("L1", x =>
                     {
                         x.TokenValidationParameters = new TokenValidationParameters()
                         {
-                            ValidateIssuer = false,
-                            ValidateAudience = false,
+                            ValidateIssuer = true,
+                            ValidIssuer= "Ng22",
+                            ValidateAudience = true,
+                            ValidAudience="L1",
 
                             RequireExpirationTime = true,
                             ValidateLifetime = true,
-                            ClockSkew = TimeSpan.FromMinutes(1),
+                            ClockSkew = TimeSpan.Zero,
+
+                            RequireSignedTokens = true,
+                            ValidateIssuerSigningKey = true,
+                            IssuerSigningKey = new SymmetricSecurityKey(Encoding.ASCII.GetBytes("ng22-1234567890123456789"))
+                        };
+                        x.Events = new JwtBearerEvents
+                        {
+                            OnAuthenticationFailed = ctx =>
+                            {
+                                return Task.CompletedTask;
+                            },
+                            OnTokenValidated = ctx =>
+                            {
+                                return Task.CompletedTask;
+                            }
+                        };
+                    })
+                    .AddJwtBearer("L2", x =>
+                    {
+                        x.TokenValidationParameters = new TokenValidationParameters()
+                        {
+                            ValidateIssuer = true,
+                            ValidIssuer = "Ng22",
+                            ValidateAudience = true,
+                            ValidAudience = "L2",
+
+                            RequireExpirationTime = true,
+                            ValidateLifetime = true,
+                            ClockSkew = TimeSpan.Zero,
 
                             RequireSignedTokens = true,
                             ValidateIssuerSigningKey = true,
@@ -132,10 +166,10 @@ namespace Ng22
 
                 spa.Options.SourcePath = "ClientApp";
 
-                if (env.IsDevelopment())
-                {
-                    spa.UseAngularCliServer(npmScript: "start");
-                }
+                //if (env.IsDevelopment())
+                //{
+                //    spa.UseAngularCliServer(npmScript: "start");
+                //}
             });
         }
     }
