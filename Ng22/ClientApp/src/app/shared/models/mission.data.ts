@@ -1,9 +1,18 @@
 export interface Mission {
-  id: string;
-  name: string;
+  uid?: string;
+  title: string;
+  brief?: string;
+  missiondetails: MissionDetails[];
 }
 
 export interface MissionDetails {
-  id: string;
-  instructions: string;
+  uid?: string;
+  missionuid: string;
+  instruction: string;
+}
+
+export interface MissionUserRelation {
+  uid?: string;
+  missionuid: string;
+  useruid: string;
 }

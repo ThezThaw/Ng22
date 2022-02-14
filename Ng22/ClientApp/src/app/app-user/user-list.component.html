@@ -1,0 +1,22 @@
+<app-speed-dial-fab [btn]="btn" (clickEmitter)="switchUi()"></app-speed-dial-fab>
+
+<div *ngIf="addNew">
+  <user-card></user-card>
+</div>
+
+<div *ngIf="!addNew">
+  <mat-accordion>
+    <mat-expansion-panel *ngFor="let u of userlist;let idx = index;" #panel (closed)="refreshList()">
+      <mat-expansion-panel-header>
+        <mat-panel-title>
+          {{u.userId + (u.nickName ? ' (' + u.nickName + ')' : '')}}
+        </mat-panel-title>
+      </mat-expansion-panel-header>
+      <user-card *ngIf="panel.expanded"
+                 [user]="u"
+                 (afterDeleteEmitter)="refreshList()"></user-card>
+    </mat-expansion-panel>
+    <br />
+  </mat-accordion>
+</div>
+

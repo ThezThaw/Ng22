@@ -1,18 +1,21 @@
+using AutoMapper;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
-using Microsoft.AspNetCore.SpaServices.AngularCli;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
+using Ng22.Backend;
+using Ng22.Backend.Resource;
 using Ng22.Helper;
-using Ng22.Resource;
 using System;
 using System.Collections.Generic;
 using System.Text;
 using System.Threading.Tasks;
+using Ng22DbContext = Ng22.Backend.Ng22DbContext;
 
 namespace Ng22
 {
@@ -29,8 +32,18 @@ namespace Ng22
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
-            services.AddScoped<IMissionResource, MissionResource>();
+            var mapperCfg = new MapperConfiguration(mc =>
+            {
+                mc.AddProfile(new Ng22MapperClass());
+            });
+            services.AddSingleton(mapperCfg.CreateMapper());
 
+            services.AddScoped<IAppUserResource, AppUserResource>();
+            services.AddScoped<IMissionResource, MissionResource>();
+            services.AddScoped<IUserDbService, UserDbService>();
+            services.AddScoped<IMissionDbService, MissionDbService>();
+            services.AddDbContext<Ng22DbContext>(builder => builder
+                .UseMySQL($"Database={Config.DbName};Data Source={Config.DbServer};Port={Config.DbPort};User Id={Config.DbUser};Password={Config.DbPassword};Charset=utf8;"));            
             services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
                     .AddJwtBearer("L1", x =>
                     {

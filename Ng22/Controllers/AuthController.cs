@@ -2,9 +2,9 @@
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.IdentityModel.Tokens;
+using Ng22.Backend;
+using Ng22.Backend.Resource;
 using Ng22.Helper;
-using Ng22.Model;
-using Ng22.Resource;
 using System;
 using System.Collections.Generic;
 using System.IdentityModel.Tokens.Jwt;
@@ -19,18 +19,20 @@ namespace Ng22.Controllers
     public class AuthController : ControllerBase
     {
         private readonly IMissionResource missionResource;
-        public AuthController(IMissionResource missionResource)
+        private readonly IAppUserResource appUserResource;
+        public AuthController(IMissionResource missionResource, IAppUserResource appUserResource)
         {
             this.missionResource = missionResource;
+            this.appUserResource = appUserResource;
         }
 
         [HttpPost("token-l1")]
         public async Task<IActionResult> GetL1Token([FromBody]LoginRequestVm loginRequestVm)
         {
             try
-            {                
-
-                if (loginRequestVm.userId == "admin")
+            {
+                var VerifiedUser = await appUserResource.GetVerifyUser(loginRequestVm.userId, loginRequestVm.password);
+                if (VerifiedUser != null)
                 {
                     var claims = new List<Claim>()
                     {
@@ -52,12 +54,8 @@ namespace Ng22.Controllers
                     return Ok(new LoginResultVm()
                     {
                         token = new JwtSecurityTokenHandler().WriteToken(token),
-                        userInfo = new UserInfoVm()
-                        {
-                            userId = loginRequestVm.userId,
-                            nickName = loginRequestVm.userId
-                        },
-                        missions = await missionResource.GetMission(loginRequestVm.userId)
+                        appUser = VerifiedUser,
+                        missions = await missionResource.GetMissionByUserId(loginRequestVm.userId)
                     });
                 }
                 else
@@ -98,7 +96,7 @@ namespace Ng22.Controllers
                     return Ok(new LoginResultL2Vm()
                     {
                         token = new JwtSecurityTokenHandler().WriteToken(token),
-                        missionDetails = await missionResource.GetMissionDetails(Guid.NewGuid())
+                        missionDetails = await missionResource.GetMissionDetails(loginRequestVm.missionUid)
                     });
                 }
                 else

@@ -3,9 +3,10 @@ import { Router } from '@angular/router';
 import { HttpClient } from '@angular/common/http';
 import { BehaviorSubject, Observable, of, Subscription } from 'rxjs';
 import { map, tap, delay, finalize } from 'rxjs/operators';
-import { AppConfigService } from 'src/app/shared/services/appconfig.service';
-import { AppUser, LoginRequest, LoginResult } from '../../../shared/models/login.data';
-import { MissionService } from '../../../shared/services/mission.service';
+import { LoginRequest, LoginResult } from '../../../shared/models/login.data';
+import { AppConfigService } from '../../../services/appconfig.service';
+import { MissionService } from '../../../services/mission.service';
+import { AppUser } from '../../../shared/models/app-user.data';
 
 @Injectable({
   providedIn: 'root',
@@ -58,13 +59,17 @@ export class AuthService implements OnDestroy {
   getUserInfo(): Observable<AppUser> {
 
     if (this._user.value) return this.user$;
-    return this.http.get<AppUser>(`${this.appCfgSvc.cfg["baseUrl"]}api/auth/get-user`).pipe(map(x => {
-      this._user.next({
-        userId: x.userId,
-        nickName: x.nickName
-      });
-      return x;
-    }));
+    return this.http.get<AppUser>(`${this.appCfgSvc.cfg["baseUrl"]}Api/AppUser/GetLoggedInUser`)
+      .pipe(map(x => {
+        this._user.next({
+          uid: x.uid,
+          userId: x.userId,
+          nickName: x.nickName,
+          alive: x.alive
+        });
+        return x;
+      }))
+      ;
   }
 
   login(username: string, password: string) {
@@ -78,8 +83,10 @@ export class AuthService implements OnDestroy {
       .pipe(
         map((x) => {
           this._user.next({
-            userId: x.userInfo.userId,
-            nickName: x.userInfo.nickName
+            uid: x.appUser.uid,
+            userId: x.appUser.userId,
+            nickName: x.appUser.nickName,
+            alive: x.appUser.alive
           });
           this.missionSvc.setMission(x.missions);
           this.setLocalStorage(x);

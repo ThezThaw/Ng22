@@ -1,3 +1,36 @@
-<app-speed-dial-fab (clickEmitter)="logout()"></app-speed-dial-fab>
+<div *ngIf="pageCode == Const.PageCodeUserList">
+  <user-list></user-list>
+</div>
 
-<mission></mission>
+<div *ngIf="pageCode == Const.PageCodeUserCard">
+  <user-card></user-card>
+</div>
+
+<div *ngIf="pageCode == Const.PageCodeMissionSetup">
+  <mission-setup></mission-setup>
+</div>
+
+<div *ngIf="pageCode == Const.PageCodeMissionList">
+  <mission></mission>
+</div>
+
+<div *ngIf="pageCode == Const.PageCodeMissionLink">
+  <mission-link></mission-link>
+</div>
+
+<div *ngIf="pageCode == Const.PageCodePageSetup">
+  <page-setup></page-setup>
+</div>
+
+<div *ngIf="pageCode == Const.PageCodeUserInfo">
+  <user-card [user]="user" [self]="true"></user-card>
+</div>
+
+<div *ngIf="pageCode === undefined"
+     style="height:100%;"
+     >
+  <div class="parent">
+    <div class="child">Ng22</div>
+  </div>
+
+</div>

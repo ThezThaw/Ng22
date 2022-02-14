@@ -1,0 +1,8 @@
+<div>
+  <mat-selection-list #menus [multiple]="false">
+    <mat-list-option *ngFor="let menu of menuList" [value]="menu"
+                     (click)="clickEmitter.emit(menu)">
+      {{menu.menuName}}
+    </mat-list-option>
+  </mat-selection-list>
+</div>

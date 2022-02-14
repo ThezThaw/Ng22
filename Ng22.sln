@@ -28,6 +28,8 @@ Project("{E24C65DC-7377-472B-9ABA-BC803B73C61A}") = "ClientApp(1)", "Ng22\Client
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Ng22.Helper", "Ng22.Helper\Ng22.Helper.csproj", "{2D8A27AD-D420-4EA7-9E1D-31F8F865E95E}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Ng22.Backend", "Ng22.Backend\Ng22.Backend.csproj", "{A5057396-253C-4F6D-AF88-D36D98F18674}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -46,6 +48,10 @@ Global
 		{2D8A27AD-D420-4EA7-9E1D-31F8F865E95E}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{2D8A27AD-D420-4EA7-9E1D-31F8F865E95E}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{2D8A27AD-D420-4EA7-9E1D-31F8F865E95E}.Release|Any CPU.Build.0 = Release|Any CPU
+		{A5057396-253C-4F6D-AF88-D36D98F18674}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{A5057396-253C-4F6D-AF88-D36D98F18674}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{A5057396-253C-4F6D-AF88-D36D98F18674}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{A5057396-253C-4F6D-AF88-D36D98F18674}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

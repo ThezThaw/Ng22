@@ -1,0 +1,36 @@
+<form [formGroup]="fg" class="form-group row">
+
+  <inputbox [fg]="fg" [name]="'userId'"
+            [label]="'UserId'"
+            [readonly]="user"
+            [max]="20"
+            [class]="'col-6'"></inputbox>
+
+  <inputbox [fg]="fg" [name]="'nickName'"
+            [label]="'Nick Name'"
+            [class]="'col-6'"></inputbox>
+
+  <chk [fg]="fg" [name]="'changepassword'" [label]="'Change Password'" *ngIf="user"
+       [class]="'col-12'"
+       (valueChangeEmitter)="changePassword();"
+       style="margin-top: -30px; margin-left: -15px;"></chk>
+
+  <inputbox [fg]="fg" [name]="'currentpassword'" *ngIf="self && c.changepassword.value"
+            [label]="'Current Password'" [type]="'password'"
+            [class]="'col-6'"></inputbox>
+
+  <inputbox [fg]="fg" [name]="'password'" *ngIf="c.changepassword.value || user === undefined"
+            [label]="'New Password'" [type]="'password'"
+            [class]="'col-6'"></inputbox>
+
+  <span class="col-6" *ngIf="!self && (c.changepassword.value || user === undefined)"></span>
+
+  <btn [label]="'Save'" (clickEmitter)="save();" [class]="'col-2'" [busy]="busy"></btn>
+  <btn *ngIf="user && user?.userId != Const.AppUserAdmin && !self"
+       [label]="'Delete'"
+       [color]="'warn'"
+       [class]="'col-2'"
+       [busy]="busy"
+       (clickEmitter)="delete();"></btn>
+
+</form>

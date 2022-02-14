@@ -26,6 +26,7 @@
     "@angular/platform-server": "^12.2.15",
     "@angular/router": "^9.1.13",
     "@nguniversal/module-map-ngfactory-loader": "8.1.1",
+    "angular-notifier": "^9.1.0",
     "bootstrap": "^4.6.0",
     "core-js": "^3.8.3",
     "jquery": "^3.5.1",

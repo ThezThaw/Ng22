@@ -1,15 +1,16 @@
-import { Component, EventEmitter, OnDestroy, OnInit, Output, ViewChild } from '@angular/core';
-import { L2LoginComponent } from '../home/l2-login/l2-login.component';
+import { Component, EventEmitter, Input, OnDestroy, OnInit, Output } from '@angular/core';
+import { L2LoginComponent } from '../login/l2-login/l2-login.component';
 import { AuthService } from '../login/module/services/auth.service';
-import { MissionService } from '../shared/services/mission.service';
+import { MissionService } from '../services/mission.service';
 
 @Component({
   selector: 'mission-details',
   templateUrl: './mission-details.component.html',
 })
 export class MissionDetailsComponent implements OnInit, OnDestroy {
+  @Input() missionUid: string;
   @Output() cancelEmitter = new EventEmitter();
-  instructions: any;
+  instruction: any;
   l2login: any;
   authorized: boolean = false;
   loading: boolean = false;
@@ -37,8 +38,8 @@ export class MissionDetailsComponent implements OnInit, OnDestroy {
     this.authService.isloggedIn_isValidToken(true, false).subscribe(ok => {
       if (ok) {
 
-        this.missionSvc.getMissionDetails().subscribe(d => {          
-          this.instructions = d.instructions;
+        this.missionSvc.getMissionDetails(this.missionUid).subscribe(d => {
+          this.instruction = d.instruction;
           this.authorized = true;
         });
 
@@ -54,7 +55,7 @@ export class MissionDetailsComponent implements OnInit, OnDestroy {
           }
 
           if (d) {
-            this.instructions = d.instructions;
+            this.instruction = d.instruction;
             this.authorized = true;
           }
         });

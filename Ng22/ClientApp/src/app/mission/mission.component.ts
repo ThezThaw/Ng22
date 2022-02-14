@@ -1,7 +1,7 @@
 import { Component, OnDestroy, OnInit, ViewChild } from '@angular/core';
 import { AuthService } from '../login/module/services/auth.service';
+import { MissionService } from '../services/mission.service';
 import { Mission } from '../shared/models/mission.data';
-import { MissionService } from '../shared/services/mission.service';
 
 @Component({
   selector: 'mission',

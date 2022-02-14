@@ -1,0 +1,16 @@
+<div class="form-group">
+  <mat-form-field appearance="outline" floatLabel="always" [formGroup]="fg" class="col">
+    <mat-label [style.fontSize.px]="LibConst.LabelSize">{{label}}</mat-label>
+    <input matInput [formControlName]="name" [readonly]="readonly"
+           [placeholder]="placeholder" [matAutocomplete]="auto"
+           [style.fontSize.px]="LibConst.ValueSize"
+           style="margin:-10px 0 0 0;height:30px;"/>
+    <mat-progress-bar mode="indeterminate" class="loading" *ngIf="loading"></mat-progress-bar>
+  </mat-form-field>
+  <mat-autocomplete #auto="matAutocomplete" [displayWith]="getDisplayValue">
+    <!--<mat-option *ngFor="let item of lst$ | async" [value]="item">-->
+    <mat-option *ngFor="let item of lst" [value]="item">
+      {{item[displayField]}}
+    </mat-option>
+  </mat-autocomplete>
+</div>

@@ -1,9 +1,5 @@
+import { AppUser } from "./app-user.data";
 import { Mission, MissionDetails } from "./mission.data";
-
-export interface AppUser {
-  userId: string;
-  nickName: string;
-}
 
 export interface LoginRequest {
   userId: string;
@@ -12,7 +8,7 @@ export interface LoginRequest {
 
 export interface LoginResult {
   token: string;
-  userInfo: AppUser;
+  appUser: AppUser;
   missions: Mission[];
 }
 

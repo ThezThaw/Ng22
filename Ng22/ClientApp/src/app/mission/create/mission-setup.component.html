@@ -1,0 +1,17 @@
+<form [formGroup]="fg" class="form-group row">
+
+  <inputbox [fg]="fg" [name]="'title'"
+            [label]="'Title'"
+            [class]="'col-6'"></inputbox>
+
+  <inputbox [fg]="fg" [name]="'brief'"
+            [label]="'Brief'"
+            [class]="'col-6'"></inputbox>
+
+  <inputbox [fg]="fg" [name]="'instruction'"
+            [label]="'Instruction'"
+            [class]="'col-12'"></inputbox>
+
+  <btn [icon]="'done'" (clickEmitter)="save();"></btn>
+
+</form>

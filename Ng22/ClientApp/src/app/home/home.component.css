@@ -1,0 +1,13 @@
+.parent {
+  height: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.child {  
+  font-size:20vw;
+  font-family:Impact, Haettenschweiler, 'Arial Narrow Bold', sans-serif;
+  font-weight:bolder;
+  opacity:5%;
+}

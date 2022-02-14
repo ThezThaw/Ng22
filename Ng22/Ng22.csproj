@@ -13,8 +13,10 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <PackageReference Include="AutoMapper" Version="11.0.1" />
     <PackageReference Include="Microsoft.AspNetCore.Authentication.JwtBearer" Version="5.0.13" />
     <PackageReference Include="Microsoft.AspNetCore.SpaServices.Extensions" Version="5.0.13" />
+    <PackageReference Include="MySql.EntityFrameworkCore" Version="5.0.10" />
     <PackageReference Include="Swashbuckle.AspNetCore" Version="6.2.3" />
     <PackageReference Include="System.IdentityModel.Tokens.Jwt" Version="6.15.0" />
   </ItemGroup>
@@ -27,6 +29,7 @@
   </ItemGroup>
 
   <ItemGroup>
+    <ProjectReference Include="..\Ng22.Backend\Ng22.Backend.csproj" />
     <ProjectReference Include="..\Ng22.Helper\Ng22.Helper.csproj" />
   </ItemGroup>
 

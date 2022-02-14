@@ -1,0 +1,30 @@
+<notifier-container></notifier-container>
+
+<mat-toolbar style="position: fixed;z-index:2;">
+  <button mat-icon-button class="example-icon" aria-label="Example icon-button with menu icon">
+    <mat-icon>menu</mat-icon>
+  </button>
+  <span>Ng22</span>
+  <span class="spacer"></span>  
+  <button mat-icon-button class="example-icon" aria-label="Example icon-button with share icon"
+          (click)="logout()">
+    <mat-icon>logout</mat-icon>
+  </button>
+</mat-toolbar>
+
+<!--<app-nav-menu style="position:fixed;z-index:2;"></app-nav-menu>-->
+
+<div>
+  <mat-sidenav-container>
+    <mat-sidenav #snav [mode]="'side'" opened class="sidenav">
+
+      <sidebar (clickEmitter)="menuSelect($event)"></sidebar>
+
+    </mat-sidenav>
+    <mat-sidenav-content>
+      <div class="content">
+        <router-outlet (activate)="onOutletLoaded($event)"></router-outlet>        
+      </div>
+    </mat-sidenav-content>
+  </mat-sidenav-container>
+</div>

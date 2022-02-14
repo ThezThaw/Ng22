@@ -1,0 +1,15 @@
+<form [formGroup]="fg" class="form-group row">
+
+  <auto [fg]="fg" [name]="'mission'" [label]="'Mission'"
+        [class]="'col-6'"
+        [require]="true"
+        [service]="missionSvc" [method]="'searchMission'" [displayField]="'title'"></auto>
+
+  <auto [fg]="fg" [name]="'user'" [label]="'User'"
+        [class]="'col-6'"
+        [require]="true"
+        [service]="appUserSvc" [method]="'getUserList'" [displayField]="'nickName'"></auto>
+
+  <btn [icon]="'done'" (clickEmitter)="save()"></btn>
+
+</form>
