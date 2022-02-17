@@ -35,10 +35,13 @@ export class AppLayoutComponent implements OnInit, AfterViewChecked {
     this.c = component;
   }
 
-  menuSelect(event) {    
+  menuSelect(event) {
+    if (this.c['pageCode'] != event['pageCode']) {
+      this.hdrSvc.resetHeader();
+    }
     this.c['pageCode'] = event['pageCode'];
     this.c['user'] = event['user'];
-    this.hdrSvc.resetHeader();
+    
   }
 
   logout() {
