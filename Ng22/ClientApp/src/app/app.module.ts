@@ -48,6 +48,7 @@ import { AddInstructionComponent } from './mission/create/add-instruction.compon
 import { MatTableModule } from '@angular/material/table';
 import { CreateMissionComponent } from './mission/create/create-mission.component';
 import { MatCardModule } from '@angular/material/card';
+import { FromNowPipe } from './shared/controls/pipe/dateFormat';
 
 //https://stackblitz.com/edit/angular-notifier-demo?file=src%2Fapp%2Fapp.module.ts
 const customNotifierOptions: NotifierOptions = {
@@ -127,6 +128,7 @@ export class MatModule { }
     BottomSheet,
     BottomSheetComponent,
     CheckboxComponent,
+    FromNowPipe,
   ],
   exports: [
     InputboxComponent,
@@ -136,6 +138,7 @@ export class MatModule { }
     BottomSheet,
     BottomSheetComponent,    
     CheckboxComponent,
+    FromNowPipe,
   ],
   imports: [
     MatModule

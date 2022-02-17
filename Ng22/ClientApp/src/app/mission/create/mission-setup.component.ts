@@ -31,7 +31,8 @@ export class MissionSetupComponent implements OnInit, OnDestroy {
     private cms: CommonMethodService,
     private popup: PopupComponent,
     private hdrSvc: HeaderService,
-    private missionSvc: MissionService) {    
+    private missionSvc: MissionService) {
+    
     this.hdrSvc.clickEvent$.subscribe(btn => {      
       if (btn && (btn as HeaderButton)?.ownby == Const.CurrentPageMissionSetup) this[(btn as HeaderButton)?.func]();
     });
@@ -80,6 +81,4 @@ export class MissionSetupComponent implements OnInit, OnDestroy {
     };
     this.hdrSvc.setHeader(h);
   }
-
-
 }

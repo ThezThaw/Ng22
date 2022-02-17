@@ -11,7 +11,7 @@
       <mat-card-title (click)="edit(mission)">
         <span class="custom-a">{{mission.title}}</span>
       </mat-card-title>
-      <mat-card-subtitle> &bull; {{mission.updatedBy}} updated on {{mission.updatedDt | date:"dd-MMM-yyyy HH:mm"}}</mat-card-subtitle>
+      <mat-card-subtitle> &bull; {{mission.updatedBy}} updated on {{mission.updatedDt | fromNow}}</mat-card-subtitle>
       <mat-card-content>
         <p>{{mission.brief}}</p>
       </mat-card-content>
