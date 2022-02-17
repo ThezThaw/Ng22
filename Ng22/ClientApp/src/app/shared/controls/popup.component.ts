@@ -11,12 +11,12 @@ export class PopupComponent {
 
   constructor(private dialog: MatDialog) { }
 
-  show(popupType, width?, data?) {
+  show(popupType, disableClose, width?, data?) {
     const popup = this.dialog.open(PopupPlaceholderComponent, {
       hasBackdrop: true,
-      disableClose: popupType == Const.PopupTypeConfirmation,
+      disableClose: popupType == Const.PopupTypeConfirmation || disableClose,
       width: width ? width : '50%',
-      data: { 'type': popupType, 'data': data }
+      data: { 'type': popupType, 'data': data },
     });
     return popup;
   }
@@ -32,8 +32,8 @@ export class PopupPlaceholderComponent {
     public dialogRef: MatDialogRef<PopupPlaceholderComponent>,
     @Inject(MAT_DIALOG_DATA) public data: any) { }
 
-  close() {
-    this.dialogRef.close();
+  close(e) {
+    this.dialogRef.close(e);
   }
 
 }

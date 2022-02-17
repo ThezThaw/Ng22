@@ -1,6 +1,6 @@
 export class StatusResult {
   status: boolean;
-  id: string;
+  data?: any;
   message: string[];
 }
 
@@ -20,4 +20,21 @@ export class FilterRequest {
   txnType?: any;
   rptType?: any;
   status?: number;
+}
+
+export interface Header {
+  btn: HeaderButton[];
+  title?: HeaderTitle;
+}
+
+export interface HeaderButton {
+  name: string;
+  func: string;
+  color?: string;
+  ownby: string;
+}
+
+export interface HeaderTitle {
+  title: string;
+  subtitle: string;
 }

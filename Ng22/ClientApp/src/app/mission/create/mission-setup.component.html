@@ -1,17 +1,30 @@
-<form [formGroup]="fg" class="form-group row">
+<!--<app-speed-dial-fab [btn]="btn" (clickEmitter)="switchUi()"></app-speed-dial-fab>-->
 
-  <inputbox [fg]="fg" [name]="'title'"
-            [label]="'Title'"
-            [class]="'col-6'"></inputbox>
+<div *ngIf="addNew">
+  <create-mission [mission]="selectedMission" (gobackEmitter)="switchUi();"></create-mission>
+</div>
 
-  <inputbox [fg]="fg" [name]="'brief'"
-            [label]="'Brief'"
-            [class]="'col-6'"></inputbox>
+<div *ngIf="!addNew">
 
-  <inputbox [fg]="fg" [name]="'instruction'"
-            [label]="'Instruction'"
-            [class]="'col-12'"></inputbox>
+  <ng-container *ngFor="let mission of lst;let idx = index;">
+    <mat-card>
+      <mat-card-title (click)="edit(mission)">
+        <span class="custom-a">{{mission.title}}</span>
+      </mat-card-title>
+      <mat-card-subtitle> &bull; {{mission.updatedBy}} updated on {{mission.updatedDt | date:"dd-MMM-yyyy HH:mm"}}</mat-card-subtitle>
+      <mat-card-content>
+        <p>{{mission.brief}}</p>
+      </mat-card-content>
+      <mat-divider *ngIf="mission.detailsCount > 0"></mat-divider>
+      <mat-card-actions align="end" *ngIf="mission.detailsCount > 0">
+        <span style="padding:5px 15px 5px 15px; background-color: #55b559; color: #ffffff; border-radius: 20px;">
+          {{mission.detailsCount}}&ensp;Instruction(s)
+        </span>
+      </mat-card-actions>
+    </mat-card>
+    <br />
+  </ng-container>
 
-  <btn [icon]="'done'" (clickEmitter)="save();"></btn>
+</div>
 
-</form>
+

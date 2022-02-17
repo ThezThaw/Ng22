@@ -15,14 +15,14 @@ namespace Ng22.Backend.Resource
             this.userDbService = userDbService;
         }
 
-        public async Task<StatusResult> AddUser(AppUserVm vm)
+        public async Task<StatusResult<AppUserVm>> AddUser(AppUserVm vm)
         {
             try
             {
                 var isExists = await userDbService.GetUser(vm.userId);
                 if (isExists != null)
                 {
-                    return new StatusResult()
+                    return new StatusResult<AppUserVm>()
                     {
                         status = false,
                         message = new List<string>() { "User Id already exists." }
@@ -33,14 +33,15 @@ namespace Ng22.Backend.Resource
                 dm.password = BCrypt.Net.BCrypt.HashPassword(vm.Password);
                 dm.alive = true;
                 await userDbService.AddUser(dm);
-                return new StatusResult()
+                return new StatusResult<AppUserVm>()
                 {
                     status = true
+
                 };
             }
             catch (Exception ex)
             {
-                return new StatusResult()
+                return new StatusResult<AppUserVm>()
                 { 
                     status = false,
                     message = new List<string>() { ex.ToString() }
@@ -48,7 +49,7 @@ namespace Ng22.Backend.Resource
             }
         }
 
-        public async Task<StatusResult> UpdateUser(AppUserVm vm)
+        public async Task<StatusResult<AppUserVm>> UpdateUser(AppUserVm vm)
         {
             try
             {
@@ -62,7 +63,7 @@ namespace Ng22.Backend.Resource
                     else
                     {
                         dm = await userDbService.GetUser(vm.userId);
-                        if (dm == null) return new StatusResult() 
+                        if (dm == null) return new StatusResult<AppUserVm>() 
                         { 
                             status = false,
                             message = new List<string>() { $"Invalid User : {vm.userId}" }
@@ -74,7 +75,7 @@ namespace Ng22.Backend.Resource
                         }
                         else
                         {
-                            return new StatusResult()
+                            return new StatusResult<AppUserVm>()
                             {
                                 status = false,
                                 message = new List<string>() { $"Invalid Current Password" }
@@ -83,14 +84,14 @@ namespace Ng22.Backend.Resource
                     }                    
                 }
                 await userDbService.UpdateUser(dm);
-                return new StatusResult()
+                return new StatusResult<AppUserVm>()
                 {
                     status = true
                 };
             }
             catch (Exception ex)
             {
-                return new StatusResult()
+                return new StatusResult<AppUserVm>()
                 {
                     status = false,
                     message = new List<string>() { ex.ToString() }
@@ -133,8 +134,8 @@ namespace Ng22.Backend.Resource
     {
         Task<List<AppUserVm>> GetUserList(string filter);
         Task<AppUserVm> GetVerifyUser(string userId, string password);
-        Task<StatusResult> AddUser(AppUserVm vm);
-        Task<StatusResult> UpdateUser(AppUserVm vm);
+        Task<StatusResult<AppUserVm>> AddUser(AppUserVm vm);
+        Task<StatusResult<AppUserVm>> UpdateUser(AppUserVm vm);
         Task<List<PageDm>> GetAvailablePageByUser(string userId);
     }
 }

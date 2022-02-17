@@ -15,6 +15,7 @@ namespace Ng22.Backend
         public DbSet<PageDm> PageTbl { get; set; }
         public DbSet<UserPageRelationDm> UserPageRelationTbl { get; set; }
         public DbSet<MissionDm> MissionTbl { get; set; }
+        public DbSet<MissionDetailsDm> MissionDetailsTbl { get; set; }
         public DbSet<MissionUserRelationDm> MissionUserRelationTbl { get; set; }
         
     }

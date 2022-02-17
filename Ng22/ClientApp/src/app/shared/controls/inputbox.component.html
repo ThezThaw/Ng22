@@ -1,21 +1,41 @@
 <div class="form-group">
   <mat-form-field appearance="outline" floatLabel="always" [formGroup]="fg" [ngClass]="readonly ? 'col readonly' : 'col'">
     <mat-label [style.fontSize.px]="LibConst.LabelSize">{{label}}</mat-label>
-    <input matInput [formControlName]="name" [readonly]="readonly" [type]="type" #input
+
+    <textarea matInput *ngIf="multi"
+              [formControlName]="name" [readonly]="readonly"
+              [id]="name"
+              [ngStyle]="{'color': readonly ? 'grey' : 'black'}"
+              [style.fontSize.px]="LibConst.ValueSize"
+              style="margin:-10px 0 0 0;height:30px;"
+              [placeholder]="placeholder"
+              autocomplete="off" autofocus
+              [maxlength]="max"
+              cdkTextareaAutosize
+              [cdkAutosizeMinRows]="autosizeMinRows"
+              [cdkAutosizeMaxRows]="autosizeMaxRows"
+              (focus)="selectOnFocus ? $event.target.select() : null"
+              (keyup)="emitEvent();">
+      </textarea>
+
+    <input matInput *ngIf="!multi"
+           [formControlName]="name" [readonly]="readonly" [type]="type"
            [id]="name"
            [ngStyle]="{'color': readonly ? 'grey' : 'black'}"
            [style.fontSize.px]="LibConst.ValueSize"
-           style="margin:-10px 0 0 0;height:30px;"
+           style="margin:-20px 0 -13px 0;height:50px;padding-bottom:1px;"
            [placeholder]="placeholder"
            autocomplete="off" autofocus
            [maxlength]="max"
            (focus)="selectOnFocus ? $event.target.select() : null"
            (keyup)="emitEvent();" />
+
     <mat-icon *ngIf="icon" matSuffix
               color="primary"
               style="font-size:30px;">{{icon}}</mat-icon>
     <mat-progress-bar mode="indeterminate" class="loading" *ngIf="loading"></mat-progress-bar>
-    <mat-hint *ngIf="max && !readonly" align="end">{{input.value.length}} / {{max}}</mat-hint>
+    <mat-hint *ngIf="max && !readonly" align="end">{{c.value?.length ?? 0}} / {{max}}</mat-hint>
+
   </mat-form-field>
 </div>
 

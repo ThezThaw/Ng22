@@ -16,3 +16,24 @@ code {
   background-color: #1b6ec2;
   border-color: #1861ac;
 }
+
+/*using*/
+.form-group { 
+   margin-bottom: 0!important; 
+}
+
+/*using*/
+.chk {
+  margin: -30px 0 10px -15px;
+}
+
+/*using*/
+.custom-a {
+  cursor: pointer;
+  color: #0366d6;
+}
+.custom-a:hover {
+  text-decoration: underline;
+}
+
+

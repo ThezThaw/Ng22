@@ -38,7 +38,7 @@ export class MissionDetailsComponent implements OnInit, OnDestroy {
     this.authService.isloggedIn_isValidToken(true, false).subscribe(ok => {
       if (ok) {
 
-        this.missionSvc.getMissionDetails(this.missionUid).subscribe(d => {
+        this.missionSvc.getMissionDetails(true, this.missionUid).subscribe(d => {
           this.instruction = d.instruction;
           this.authorized = true;
         });

@@ -1,15 +1,33 @@
 <notifier-container></notifier-container>
+<app-speed-dial-fab [btn]="[{ 'icon': 'logout' }]" (clickEmitter)="logout()"></app-speed-dial-fab>
 
 <mat-toolbar style="position: fixed;z-index:2;">
   <button mat-icon-button class="example-icon" aria-label="Example icon-button with menu icon">
     <mat-icon>menu</mat-icon>
   </button>
   <span>Ng22</span>
-  <span class="spacer"></span>  
-  <button mat-icon-button class="example-icon" aria-label="Example icon-button with share icon"
+
+  <span>Title here</span>
+
+  <span class="spacer"></span>
+
+  <ng-container *ngFor="let b of btn;let idx = index;">
+    <button mat-raised-button
+            [color]="b?.color ? b?.color : 'primary'"
+            (click)="headerBtnClick(b)"
+            [disabled]="busy"
+            style="margin-right:5px;">
+      {{b.name}}
+    </button>
+  </ng-container>
+
+
+
+
+  <!--<button mat-icon-button class="example-icon" aria-label="Example icon-button with share icon"
           (click)="logout()">
     <mat-icon>logout</mat-icon>
-  </button>
+  </button>-->
 </mat-toolbar>
 
 <!--<app-nav-menu style="position:fixed;z-index:2;"></app-nav-menu>-->
@@ -23,7 +41,7 @@
     </mat-sidenav>
     <mat-sidenav-content>
       <div class="content">
-        <router-outlet (activate)="onOutletLoaded($event)"></router-outlet>        
+        <router-outlet (activate)="onOutletLoaded($event)"></router-outlet>
       </div>
     </mat-sidenav-content>
   </mat-sidenav-container>

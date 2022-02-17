@@ -1,0 +1,13 @@
+<form [formGroup]="fg" class="form-group row">
+
+  <inputbox [fg]="fg" [name]="'instruction'"
+            [label]="'Instruction'"
+            [multi]="true"
+            [autosizeMinRows]="10"
+            [autosizeMaxRows]="10"
+            [selectOnFocus]="false"
+            [class]="'col-12'"></inputbox>
+
+  <btn [label]="'Save'" (clickEmitter)="save();" [busy]="busy"></btn>
+
+</form>

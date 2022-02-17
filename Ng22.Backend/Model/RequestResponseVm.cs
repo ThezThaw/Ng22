@@ -3,10 +3,10 @@ using System.Collections.Generic;
 
 namespace Ng22.Backend
 {
-    public class StatusResult
+    public class StatusResult<T>
     {
         public bool status { get; set; }
-        public string id { get; set; }
+        public T data { get; set; }
         public List<string> message { get; set; }
     }
 

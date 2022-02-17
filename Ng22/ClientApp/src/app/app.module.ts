@@ -44,6 +44,10 @@ import { MatBottomSheetModule } from "@angular/material/bottom-sheet";
 import { PopupComponent, PopupPlaceholderComponent } from './shared/controls/popup.component';
 import { CheckboxComponent } from './shared/controls/chk.component';
 import { MatCheckboxModule } from "@angular/material/checkbox";
+import { AddInstructionComponent } from './mission/create/add-instruction.component';
+import { MatTableModule } from '@angular/material/table';
+import { CreateMissionComponent } from './mission/create/create-mission.component';
+import { MatCardModule } from '@angular/material/card';
 
 //https://stackblitz.com/edit/angular-notifier-demo?file=src%2Fapp%2Fapp.module.ts
 const customNotifierOptions: NotifierOptions = {
@@ -95,13 +99,12 @@ const customNotifierOptions: NotifierOptions = {
     MatInputModule,
     MatExpansionModule,
     MatCheckboxModule,
-    //MatCardModule,
+    MatCardModule,
     MatRippleModule,
     //MatBadgeModule,
     //MatTabsModule,
     MatIconModule,
-    //MatChipsModule,
-    //MatTableModule,
+    MatTableModule,
     //MatProgressBarModule,
     MatBottomSheetModule,
     MatDialogModule,
@@ -123,8 +126,6 @@ export class MatModule { }
     AutoCompleteComponent,
     BottomSheet,
     BottomSheetComponent,
-    PopupComponent,
-    PopupPlaceholderComponent,
     CheckboxComponent,
   ],
   exports: [
@@ -133,9 +134,7 @@ export class MatModule { }
     ButtonComponent,
     AutoCompleteComponent,
     BottomSheet,
-    BottomSheetComponent,
-    PopupComponent,
-    PopupPlaceholderComponent,
+    BottomSheetComponent,    
     CheckboxComponent,
   ],
   imports: [
@@ -166,6 +165,10 @@ export class CustomControlModule {
     MissionSetupComponent,
     MissionLinkComponent,
     PageSetupComponent,
+    AddInstructionComponent,
+    PopupComponent,
+    PopupPlaceholderComponent,
+    CreateMissionComponent,
   ],
   imports: [
     BrowserModule.withServerTransition({ appId: 'ng-cli-universal' }),
@@ -195,7 +198,7 @@ export class CustomControlModule {
           return appConfigService.loadAppConfig();
         };
       }
-  },
+    },    
     {
       provide: APP_INITIALIZER,
       multi: true,
@@ -206,8 +209,11 @@ export class CustomControlModule {
             authService.isloggedIn_isValidToken(false, true).subscribe().add(resolve);
         });
       }
-    },
+    }
   ],
+  //entryComponents: [
+  //  PopupPlaceholderComponent
+  //],
   bootstrap: [AppComponent]
 })
 export class AppModule { }

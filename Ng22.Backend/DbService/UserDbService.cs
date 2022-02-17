@@ -20,7 +20,7 @@ namespace Ng22.Backend
 
         public async Task UpdateUser(AppUserDm dm)
         {
-            var existing = ctx.AppUserTbl.Where(x => x.uid == dm.uid).FirstOrDefault();
+            var existing = await ctx.AppUserTbl.Where(x => x.uid == dm.uid).FirstOrDefaultAsync();
             existing.nickName = dm.nickName;
             existing.alive = dm.alive;
             existing.password = dm.password == null ? existing.password : dm.password;

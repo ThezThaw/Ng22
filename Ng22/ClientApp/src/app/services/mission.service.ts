@@ -11,14 +11,11 @@ import { AppConfigService } from "./appconfig.service";
 })
 
 export class MissionService {
-  public url: string;
   private missions = new BehaviorSubject<Mission[]>(null);
   private missions$: Observable<Mission[]> = this.missions.asObservable();
 
   constructor(private http: HttpClient,
-    private appCfgSvc: AppConfigService) {
-    
-  }
+    private appCfgSvc: AppConfigService) {}
    
   setMission(missions) {
     this.missions.next(missions);
@@ -34,17 +31,13 @@ export class MissionService {
     }));
   }
 
-  getMissionDetails(missionUid: string): Observable<MissionDetails> {
+  getMissionDetails(l2: boolean, missionUid: string): Observable<any> {
     var params = new HttpParams().set('missionUid', missionUid);
-    return this.http.get<MissionDetails>(`${this.appCfgSvc.cfg["baseUrl"]}api/mission/l2/GetMissionDetails`,
-      { params: params });
+    var url = l2 ? `${this.appCfgSvc.cfg["baseUrl"]}api/mission/l2/GetMissionDetails` : `${this.appCfgSvc.cfg["baseUrl"]}api/mission/GetMissionDetails`;
+    return this.http.get<any>(url,{ params: params });
   }
 
-  createUpdate(mission: Mission): Observable<any> {
-    return this.http.post<any>(`${this.appCfgSvc.cfg["baseUrl"]}api/mission/AddMission`, mission);
-  }
-
-  searchMission(filter: string): Observable<Mission[]> {
+  searchMission(filter: string = ''): Observable<Mission[]> {
     var params = new HttpParams().set('filter', filter);
     return this.http.get<Mission[]>(`${this.appCfgSvc.cfg["baseUrl"]}api/mission/SearchMission`,
       { params: params });
@@ -52,5 +45,17 @@ export class MissionService {
 
   linkMission(data: MissionUserRelation): Observable<any> {
     return this.http.post<any>(`${this.appCfgSvc.cfg["baseUrl"]}api/mission/LinkMission`, data);
+  }
+
+  AddUpdateMission(mission: Mission): Observable<any> {
+    return this.http.post<any>(`${this.appCfgSvc.cfg["baseUrl"]}api/mission/AddUpdateMission`, mission);
+  }
+
+  AddUpdateMissionDetails(md: MissionDetails): Observable<any> {
+    return this.http.post<any>(`${this.appCfgSvc.cfg["baseUrl"]}api/mission/AddUpdateMissionDetails`, md);
+  }
+
+  DeleteMissionDetails(md: MissionDetails): Observable<any> {
+    return this.http.post<any>(`${this.appCfgSvc.cfg["baseUrl"]}api/mission/DeleteMissionDetails`, md);
   }
 }

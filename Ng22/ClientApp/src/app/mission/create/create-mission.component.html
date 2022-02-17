@@ -1,0 +1,46 @@
+<form [formGroup]="fg" class="form-group row">
+  <inputbox [fg]="fg" [name]="'title'"
+            [label]="'Title'"
+            [max]="50"
+            [class]="'col-12'"></inputbox>
+
+  <inputbox [fg]="fg" [name]="'brief'"
+            [label]="'Brief'"
+            [multi]="true"
+            [max]="500"
+            [class]="'col-12'"></inputbox>
+</form>
+
+<!--<instruction-list *ngIf="mission" [mission]="mission" [busy]="busy"></instruction-list>-->
+
+<div *ngIf="mission && lst?.length > 0">
+
+  <mat-card style="margin: 0 16px 0 16px;">
+    <mat-card-header>
+      <mat-card-title style="margin-left: -15px;">{{lst?.length + ' Instruction(s)'}}</mat-card-title>
+    </mat-card-header>
+
+    <ng-container *ngFor="let md of lst;let idx = index;">
+      <mat-card>
+        <mat-card-subtitle>Updated on {{md.updatedDt | date:"dd-MMM-yyyy HH:mm"}}</mat-card-subtitle>
+        {{md.instruction}}
+        <mat-card-actions>
+          <button mat-raised-button color="primary"
+                  (click)="addInstruction(md)" [disabled]="busy">
+            Edit Instruction
+          </button>
+          <button mat-raised-button color="warn"
+                  (click)="deleteInstruction(md)" [disabled]="busy">
+            Delete Instruction
+          </button>
+        </mat-card-actions>
+      </mat-card>
+      <br />
+    </ng-container>
+
+  </mat-card>
+
+
+
+
+</div>

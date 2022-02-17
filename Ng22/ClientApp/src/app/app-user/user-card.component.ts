@@ -58,7 +58,6 @@ export class UserCardComponent implements OnInit, OnDestroy {
     let user = this.fg.getRawValue() as AppUser;
     user.uid = this.user?.uid;
     user.skippassword = !this.c.changepassword.value;
-    user.alive = true;
     this.setBusy(true);
 
     this.appUserSvc.createUpdate(user, this.user == null).subscribe(result => {
@@ -88,7 +87,7 @@ export class UserCardComponent implements OnInit, OnDestroy {
 
   delete() {
 
-    var confirm = this.cfm.show(Const.PopupTypeConfirmation, '25%', 'Confirm delete ?');
+    var confirm = this.cfm.show(Const.PopupTypeConfirmation, true, '25%', 'Confirm delete ?');
     confirm.afterClosed().subscribe(yes => {
       if (!yes) return;
 
@@ -97,6 +96,7 @@ export class UserCardComponent implements OnInit, OnDestroy {
       this.setBusy(true);
       this.appUserSvc.createUpdate(user, false).subscribe(x => {
 
+        this.notiSvc.notify('error', 'DELETED');
         this.afterDeleteEmitter.emit();
 
       }, err => {

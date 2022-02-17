@@ -21,6 +21,11 @@ namespace Ng22.Backend
     [Table("app_user")]
     public class AppUserDm
     {
+        public AppUserDm()
+        {
+            this.alive = true;
+        }
+
         [Key]
         [Column(TypeName = "varchar(36)")]
         public Guid uid { get; set; }

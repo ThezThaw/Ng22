@@ -5,3 +5,13 @@
     <button mat-raised-button color="primary" [mat-dialog-close]="false">NO</button>
   </div>
 </div>
+
+<div *ngIf="data.type == LibConst.PopupTypeAddInstruction">
+
+  <button mat-icon-button style="float: right; top: -24px; right: -24px;" [mat-dialog-close]="false">
+    <mat-icon class="close-icon">close</mat-icon>
+  </button>
+  <h2 mat-dialog-title>Instruction</h2>
+  <add-instruction (closeEmitter)="close($event)"
+                   [md]="data.data"></add-instruction>
+</div>
