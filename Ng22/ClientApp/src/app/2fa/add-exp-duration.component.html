@@ -1,0 +1,28 @@
+<form [formGroup]="fg" class="form-group row">
+
+  <inputbox [fg]="fg" [name]="'duration'" [markTouch]="true"
+            style="padding:0px;"
+            [label]="'New Duration'"
+            [min_max_unit]="selectedUnit['name']"
+            [class]="'col-6'" [type]="'number'"></inputbox>
+
+  <toggle [fg]="fg" [name]="'unit'" [class]="'col-6'"
+          style="padding:0px;"
+          [list]="[{'id':'M','name':'Minute'},{'id':'H','name':'Hour'},{'id':'D','name':'Day'}]"
+          [selected]="selectedUnit"
+          (valueChangeEmitter)="changeToggle()"></toggle>
+
+  <btn [label]="'Add'" [icon]="'add'" (clickEmitter)="save();" [busy]="busy"
+       style="padding:0px;"></btn>
+
+</form>
+<br />
+<mat-card *ngIf="lst?.length > 0">
+  <mat-card-title>Existing Duration</mat-card-title>
+  <mat-chip-list>
+    <mat-chip *ngFor="let d of lst;">
+      <mat-icon style="cursor:pointer;color:red;" (click)="delete(d.id)">cancel</mat-icon>&nbsp;
+      {{d.name}}
+    </mat-chip>
+  </mat-chip-list>
+</mat-card>

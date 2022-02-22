@@ -25,12 +25,11 @@ namespace Ng22.Backend
         public bool alive { get; set; }
 
         [Column(TypeName = "tinyint")]
-        public bool IsAssigned { get; set; }        
-
-        [Column("updated_dt")]
-        public DateTime UpdatedDt { get; set; }
+        public bool IsAssigned { get; set; }
+        public DateTime UpdatedOn { get; set; }
         public string UpdatedBy { get; set; }
         public virtual ICollection<MissionDetailsDm> missionDetails { get; set; }
+        public virtual ICollection<MissionUserRelationDm> MissionUserRelationDm { get; set; }
     }
 
     [Table("mission_details")]
@@ -47,9 +46,7 @@ namespace Ng22.Backend
         [JsonIgnore]
         public MissionDm MissionDm { get; set; }
         public string Instruction { get; set; }
-
-        [Column("updated_dt")]
-        public DateTime UpdatedDt { get; set; }
+        public DateTime UpdatedOn { get; set; }
     }
 
 
@@ -71,6 +68,8 @@ namespace Ng22.Backend
 
         [ForeignKey("UserUid")]
         public AppUserDm AppUserDm { get; set; }
+        public DateTime UpdatedOn { get; set; }
+        public string UpdatedBy { get; set; }
     }
 
     public class MissionVm
@@ -80,9 +79,17 @@ namespace Ng22.Backend
         public string Brief { get; set; }
         public bool Alive { get; set; }
         public bool IsAssigned { get; set; }
-        public DateTime UpdatedDt { get; set; }
+        public DateTime UpdatedOn { get; set; }
         public string UpdatedBy { get; set; }
         public virtual ICollection<MissionDetailsDm> missionDetails { get; set; }
         public int DetailsCount { get; set; }
+    }
+
+    public class AssignMissionVm
+    {
+        public MissionVm MissionVm { get; set; }
+        public ICollection<AppUserVm> AppUserVm { get; set; }
+        public DateTime UpdatedOn { get; set; }
+        public string UpdatedBy { get; set; }
     }
 }

@@ -1,8 +1,8 @@
 import { Component, EventEmitter, OnDestroy, OnInit, Output } from '@angular/core';
 import { Subscription } from 'rxjs';
 import { AuthService } from '../login/module/services/auth.service';
-import { AppUserService } from '../services/app-user.service';
-import { AppUser, Page } from '../shared/models/app-user.data';
+import { AccessRightService } from '../services/access-right.service';
+import { Page } from '../shared/models/access-right.data';
 
 @Component({
   selector: 'sidebar',
@@ -17,7 +17,7 @@ export class SidebarComponent implements OnInit, OnDestroy {
 
   constructor(
     private authSvc: AuthService,
-    private urSvc: AppUserService) { }
+    private arSvc: AccessRightService) { }
     
 
   ngOnInit(): void {
@@ -26,9 +26,15 @@ export class SidebarComponent implements OnInit, OnDestroy {
 
       var ssx = this.authSvc.getUserInfo().subscribe(user => {
         if (user) {
-          this.urSvc.getAvailablePageByUser(user.userId).subscribe(m => {
+          this.arSvc.getAvailablePageByUser(user.userId).subscribe(m => {
             this.menuList = m;
             this.menuList.forEach(m => m.user = user);
+            
+            var defaultPage = this.menuList.find(x => x['default'] === true);
+            if (defaultPage) {
+              this.clickEmitter.emit(defaultPage);
+            }
+
           });
         }
       });

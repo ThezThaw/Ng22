@@ -35,39 +35,12 @@ namespace Ng22.Backend
 
         [Column(TypeName = "tinyint")]
         public bool alive { get; set; }
+        public virtual ICollection<UserPageRelationDm> AccessRight { get; set; }
     }
 
     public class UserRoleVm
     {
         public string PageCode { get; set; }
         public string MenuName { get; set; }
-    }
-
-    [Table("app_page")]
-    public class PageDm //Vm = ViewModel, Dm = DataModel, Bm = Both Combine together
-    {
-        [Key]
-        [Column(TypeName = "varchar(36)")]
-        public Guid Uid { get; set; }
-        public string PageCode { get; set; }
-        public string MenuName { get; set; }
-    }
-
-    [Table("rel_user_page")]
-    public class UserPageRelationDm //Vm = ViewModel, Dm = DataModel, Bm = Both Combine together
-    {
-        [Key]
-        [Column(TypeName = "varchar(36)")]
-        public Guid Uid { get; set; }
-
-        [Column(TypeName = "varchar(36)")]
-        public Guid UserUid { get; set; }
-        [ForeignKey("UserUid")]
-        public AppUserDm AppUserDm { get; set; }
-
-        [Column(TypeName = "varchar(36)")]
-        public Guid PageUid { get; set; }
-        [ForeignKey("PageUid")]
-        public PageDm PageDm { get; set; }
     }
 }

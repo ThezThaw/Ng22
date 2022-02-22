@@ -30,6 +30,18 @@
            (focus)="selectOnFocus ? $event.target.select() : null"
            (keyup)="emitEvent();" />
 
+    <mat-error *ngIf="c.hasError('pattern')">
+      Not Allowed Space
+    </mat-error>
+
+    <mat-error *ngIf="c.hasError('min')">
+      Not Allowed Less than {{c.errors['min']?.min}} {{min_max_unit}}
+    </mat-error>
+
+    <mat-error *ngIf="c.hasError('max')">
+      Not Allowed More than {{c.errors['max']?.max}} {{min_max_unit}}
+    </mat-error>
+
     <mat-icon *ngIf="icon" matSuffix
               color="primary"
               style="font-size:30px;">{{icon}}</mat-icon>

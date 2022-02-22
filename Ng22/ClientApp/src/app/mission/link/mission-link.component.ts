@@ -1,8 +1,12 @@
-import { Component, OnDestroy, OnInit, ViewChild } from '@angular/core';
+import { ChangeDetectorRef, Component, Input, OnDestroy, OnInit, ViewChild } from '@angular/core';
 import { FormBuilder, FormGroup } from '@angular/forms';
-import { AppUserService } from '../../services/app-user.service';
+import { Subscription } from 'rxjs';
 import { MissionService } from '../../services/mission.service';
-import { MissionUserRelation } from '../../shared/models/mission.data';
+import { Const } from '../../shared/const';
+import { PopupComponent } from '../../shared/controls/popup.component';
+import { Mission, MissionUserRelation } from '../../shared/models/mission.data';
+import { Header, HeaderButton } from '../../shared/models/shared-data.model';
+import { CommonMethodService, HeaderService } from '../../shared/service';
 
 @Component({
   selector: 'mission-link',
@@ -10,42 +14,71 @@ import { MissionUserRelation } from '../../shared/models/mission.data';
 })
 export class MissionLinkComponent implements OnInit, OnDestroy {
 
+  btn: any[] = [{ 'icon': 'add' }];
   fg: FormGroup;
   get c() { return this.fg.controls; }
+  focusElementId = '#title';
+  ssx: Subscription = new Subscription();
+
+  lst: Mission[] = [];
+  addNew: boolean = false;
+  selected: MissionUserRelation;
 
   constructor(
+    private ref: ChangeDetectorRef,
     private fb: FormBuilder,
-    public missionSvc: MissionService,
-    public appUserSvc: AppUserService) { }
+    private cms: CommonMethodService,
+    private popup: PopupComponent,
+    private hdrSvc: HeaderService,
+    private missionSvc: MissionService) {
+
+    this.hdrSvc.clickEvent$.subscribe(btn => {
+      if (btn && (btn as HeaderButton)?.ownby == Const.CurrentPageAssignMissionList) this[(btn as HeaderButton)?.func]();
+    });
+  }
 
   ngOnDestroy(): void {
-
+    this.ssx?.unsubscribe();
   }
 
   ngOnInit(): void {
-    this.fg = this.fb.group({
-      mission: [],
-      user: [],
-    });
-
-    for (let c in this.fg.controls) {
-      this.fg.controls[c].markAsTouched();
-    }
+    this.getList();
+    this.setHeader();
   }
 
-  save() {
+  assign() {
+    this.addNew = true;
+  }
 
-    if (this.fg.invalid) return;
-    var raw = this.fg.getRawValue();
-
-    let data: MissionUserRelation = {
-      missionuid: raw.mission['uid'],
-      useruid: raw.user['uid']
-    };
-
-    this.missionSvc.linkMission(data).subscribe(x => {
-      this.fg.reset();
+  getList() {
+    var ssx = this.missionSvc.GetAssignedMission().subscribe(x => {
+      this.lst = x;
     });
+    this.ssx.add(ssx);
+  }
 
+  switchUi() {
+    this.addNew = false;
+    this.selected = null;
+    this.setHeader();
+    this.getList();
+  }
+
+  setHeader() {
+    let h: Header = {
+      btn: [{
+        name: 'Assign to User',
+        icon: 'how_to_reg',
+        func: 'assign',
+        ownby: Const.CurrentPageAssignMissionList
+      }]
+    };
+    this.hdrSvc.setHeader(h);
+  }
+
+  edit(val) {
+    this.selected = val;
+    this.ref.detectChanges();
+    this.addNew = true;
   }
 }

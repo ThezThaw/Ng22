@@ -1,4 +1,3 @@
 {
-  "baseUrl": "http://localhost:5000/",
-  "dbounceTime": 1
+  "baseUrl": "http://localhost:5000/"
 }

@@ -18,9 +18,7 @@ import { CommonMethodService, HeaderService } from '../../shared/service';
 export class CreateMissionComponent implements OnInit, OnDestroy {
   @Input() mission: Mission;
   @Output() gobackEmitter = new EventEmitter();
-  //@ViewChild(InstructionListComponent) child: InstructionListComponent;
 
-  btn: any[] = [{ 'icon': 'save' }];
   fg: FormGroup;
   get c() { return this.fg.controls; }
   focusElementId = '#title';
@@ -66,6 +64,7 @@ export class CreateMissionComponent implements OnInit, OnDestroy {
     let h: Header = {
       btn: [{
         name: 'Save Mission',
+        icon: 'save',
         func: 'save',
         ownby: Const.CurrentPageCreateMission
       }]
@@ -74,12 +73,14 @@ export class CreateMissionComponent implements OnInit, OnDestroy {
     if (this.mission) {
       h.btn.push({
         name: 'Delete Mission',
+        icon: 'delete_forever',
         func: 'delete',
         color: 'warn',
         ownby: Const.CurrentPageCreateMission
       },
       {
         name: 'Add Instruction',
+        icon: 'add',
         func: 'addInstruction',
         ownby: Const.CurrentPageCreateMission
       });
@@ -87,6 +88,7 @@ export class CreateMissionComponent implements OnInit, OnDestroy {
 
     h.btn.push({
       name: 'Go Back',
+      icon: 'arrow_left',
       func: 'cancel',
       color: 'basic',
       ownby: Const.CurrentPageCreateMission
@@ -179,7 +181,7 @@ export class CreateMissionComponent implements OnInit, OnDestroy {
 
   refreshInstructionList() {
     var ssx = this.missionSvc.getMissionDetails(false, this.mission.uid).subscribe(x => {
-      this.mission.missiondetails = this.lst = x;
+      this.mission.missionDetails = this.lst = x;
     });
     this.ssx.add(ssx);
   }
@@ -199,7 +201,7 @@ export class CreateMissionComponent implements OnInit, OnDestroy {
         var existing = this.lst.find(x => x.uid == result.uid);
         if (existing) {
           existing.instruction = result.instruction;
-          existing.updatedDt = result.updatedDt;
+          existing.updatedOn = result.updatedOn;
         } else {
           this.lst.push(result as MissionDetails);
         }

@@ -4,14 +4,14 @@ export interface Mission {
   brief?: string;
   alive: boolean;
   isAssigned: boolean;
-  missiondetails: MissionDetails[];
+  missionDetails: MissionDetails[];
 }
 
 export interface MissionDetails {
   uid?: string;
   missionUid: string;
   instruction: string;
-  updatedDt?: string;
+  updatedOn?: string;
 }
 
 export interface MissionUserRelation {

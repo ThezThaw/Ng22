@@ -2,12 +2,17 @@
 <app-speed-dial-fab [btn]="[{ 'icon': 'logout' }]" (clickEmitter)="logout()"></app-speed-dial-fab>
 
 <mat-toolbar style="position: fixed;z-index:2;">
-  <button mat-icon-button class="example-icon" aria-label="Example icon-button with menu icon">
+  <button mat-icon-button class="example-icon" (click)="drawer.toggle()">
     <mat-icon>menu</mat-icon>
   </button>
-  <span>Ng22</span>
-
-  <span>Title here</span>
+  &nbsp;
+  <span class="ng22" style="cursor:pointer" (click)="snowflake()">Ng22</span>
+  <span *ngIf="title" style="display: flex; align-items: center;">
+    &nbsp;&nbsp;&nbsp;&nbsp;&bull;&nbsp;&nbsp;
+    {{title}}
+    &nbsp;
+    <mat-icon>{{icon}}</mat-icon>
+  </span>
 
   <span class="spacer"></span>
 
@@ -17,32 +22,64 @@
             (click)="headerBtnClick(b)"
             [disabled]="busy"
             style="margin-right:5px;">
+      <mat-icon *ngIf="b.icon" [ngStyle]="{'margin':b.name ? '0 -5px 0 -10px' : '0' }">{{b.icon}}</mat-icon>&nbsp;
       {{b.name}}
     </button>
   </ng-container>
-
-
-
-
-  <!--<button mat-icon-button class="example-icon" aria-label="Example icon-button with share icon"
-          (click)="logout()">
-    <mat-icon>logout</mat-icon>
-  </button>-->
+  <mat-progress-bar class="loading" mode="indeterminate" *ngIf="busy"></mat-progress-bar>
 </mat-toolbar>
 
-<!--<app-nav-menu style="position:fixed;z-index:2;"></app-nav-menu>-->
+<mat-drawer-container class="example-container" autosize [hasBackdrop]="isMobile">  
+  <mat-drawer #drawer class="ng22-sidenav" [mode]="isMobile ? 'over' : 'side'" [opened]="!isMobile">
+    <sidebar (clickEmitter)="menuSelect($event,drawer)"></sidebar>    
+  </mat-drawer>
 
-<div>
-  <mat-sidenav-container>
-    <mat-sidenav #snav [mode]="'side'" opened class="sidenav">
+  <div class="content">
+    <router-outlet (activate)="onOutletLoaded($event)"></router-outlet>
+  </div>
 
-      <sidebar (clickEmitter)="menuSelect($event)"></sidebar>
+</mat-drawer-container>
 
-    </mat-sidenav>
-    <mat-sidenav-content>
-      <div class="content">
-        <router-outlet (activate)="onOutletLoaded($event)"></router-outlet>
-      </div>
-    </mat-sidenav-content>
-  </mat-sidenav-container>
+
+
+<div class="snowflakes" aria-hidden="true" *ngIf="showSF">
+  <div class="snowflake">
+    အရေးတော်ပုံ &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;၊|၊
+  </div>
+  <div class="snowflake">
+    အောင်တော့မည်
+  </div>
+  <div class="snowflake">
+    ၊|၊
+  </div>
+  <div class="snowflake">
+    အရေးတော်ပုံ
+  </div>
+  <div class="snowflake">
+    အောင်တော့မည်&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;၊|၊
+  </div>
+  <div class="snowflake">
+    ၊|၊
+  </div>
+  <div class="snowflake">
+    အာဏာရှင်စနစ် အဆုံးသတ်ရမည်
+  </div>
+  <div class="snowflake">
+    ၊|၊
+  </div>
+  <div class="snowflake">
+    ၊|၊&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; အရေးတော်ပုံ
+  </div>
+  <div class="snowflake">
+    ၊|၊
+  </div>
+  <div class="snowflake">
+    ၊|၊&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; အောင်တော့မည်
+  </div>
+  <div class="snowflake">
+
+  </div>
+  <div class="snowflake">
+    အာဏာရှင်စနစ် အဆုံးသတ်ရမည်
+  </div>
 </div>

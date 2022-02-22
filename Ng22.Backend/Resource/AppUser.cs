@@ -99,9 +99,10 @@ namespace Ng22.Backend.Resource
             }            
         }
 
-        public async Task<List<AppUserVm>> GetUserList(string filter)
+        public async Task<List<AppUserVm>> GetUserList(string filter, bool excludeAr)
         {
-            var dm = await userDbService.GetUserList(x => (string.IsNullOrEmpty(filter) ? true : x.userId.Contains(filter) || x.nickName.Contains(filter)) && x.alive);
+            var dm = await userDbService.GetUserList(x => (string.IsNullOrEmpty(filter) ? true : x.userId.Contains(filter) || x.nickName.Contains(filter)) &&
+                                (excludeAr ? !x.AccessRight.Any() : true) && x.alive);
             return mapper.Map<List<AppUserVm>>(dm);
         }
 
@@ -118,24 +119,14 @@ namespace Ng22.Backend.Resource
             return null;
         }
 
-        public async Task<List<PageDm>> GetAvailablePageByUser(string userId)
-        {
-            var page = await userDbService.GetAvailablePageByUser(userId);
-            if (userId != Const.AdminUserId)
-            {
-                var defaultPage = await userDbService.GetPage(x => x.PageCode == Const.PageCodeUserInfo);
-                page.Add(defaultPage.FirstOrDefault());
-            }            
-            return page;
-        }
+        
     }
 
     public interface IAppUserResource
     {
-        Task<List<AppUserVm>> GetUserList(string filter);
+        Task<List<AppUserVm>> GetUserList(string filter, bool excludeAr);
         Task<AppUserVm> GetVerifyUser(string userId, string password);
         Task<StatusResult<AppUserVm>> AddUser(AppUserVm vm);
         Task<StatusResult<AppUserVm>> UpdateUser(AppUserVm vm);
-        Task<List<PageDm>> GetAvailablePageByUser(string userId);
     }
 }

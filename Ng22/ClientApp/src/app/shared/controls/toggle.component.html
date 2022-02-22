@@ -1,0 +1,19 @@
+<div class="form-group col" [formGroup]="fg">
+
+  <mat-progress-bar mode="indeterminate" *ngIf="loading"
+                    style="top:50%;"></mat-progress-bar>
+
+  <mat-button-toggle-group [formControlName]="name" [value]="selected"
+                           (change)="valueChangeEmitter.emit()"
+                           [style.fontSize.px]="LibConst.LabelSize">
+    <mat-button-toggle *ngFor="let lst of list;index as idx" color="primary"
+                       [value]="lst"
+                       [checked]="lst.id == selected.id"
+                       style="border:1px solid #EBEDF0;border-radius: 3px;height:44px;">
+      <mat-icon *ngIf="lst.icon" class="tab-icon">{{lst.icon}}</mat-icon>
+      <span>{{lst.name}}&nbsp;<span *ngIf="lst.symbol">({{lst.symbol}})</span></span>
+    </mat-button-toggle>
+  </mat-button-toggle-group>
+</div>
+
+

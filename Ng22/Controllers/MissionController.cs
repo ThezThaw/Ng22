@@ -14,7 +14,7 @@ namespace Ng22.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
-    public class MissionController : ControllerBase
+    public class MissionController : BaseController
     {
         private readonly IMissionResource missionResource;
         private readonly IMissionDbService missionDbService;
@@ -34,17 +34,23 @@ namespace Ng22.Controllers
 
         [HttpGet("SearchMission")]
         [Authorize(AuthenticationSchemes = "L1")]
-        public async Task<IActionResult> SearchMission(string filter)
+        public async Task<IActionResult> SearchMission(string filter, bool excludeAssigned)
         {
-            return Ok(await missionResource.SearchMission(filter));
+            return Ok(await missionResource.SearchMission(filter, excludeAssigned));
         }
 
-        [HttpPost("LinkMission")]
+        [HttpPost("AssignMission")]
         [Authorize(AuthenticationSchemes = "L1")]
-        public async Task<IActionResult> LinkMission(MissionUserRelationDm dm)
+        public async Task<IActionResult> AssignMission(List<MissionUserRelationDm> dm)
+        {   
+            return Ok(await missionResource.AssignMission(dm, GetCurrentUserId()));
+        }
+
+        [HttpPost("UnAssignAllUser/{missionUid}")]
+        [Authorize(AuthenticationSchemes = "L1")]
+        public async Task<IActionResult> UnAssignAllUser(Guid missionUid)
         {
-            await missionDbService.LinkMission(dm);
-            return Ok();
+            return Ok(await missionResource.UnAssignAllUser(missionUid));
         }
 
         [HttpGet("l2/GetMissionDetails")]//for user
@@ -52,7 +58,7 @@ namespace Ng22.Controllers
         public async Task<IActionResult> GetMissionDetails(Guid missionUid)
         {
             var md = await missionDbService.GetMissionDetails(x => x.MissionUid == missionUid);
-            return Ok(md.FirstOrDefault());
+            return Ok(await md.ToListAsync());
         }
 
         [HttpGet("GetMissionDetails")]//for user
@@ -64,19 +70,11 @@ namespace Ng22.Controllers
             return Ok(await md.ToListAsync());
         }
 
-        //[HttpPost("AddMission")]
-        //[Authorize(AuthenticationSchemes = "L1")]
-        //public async Task<IActionResult> AddMission([FromBody]MissionDm dm)
-        //{
-        //    await missionDbService.AddMission(dm);
-        //    return Ok();
-        //}
-
         [HttpPost("AddUpdateMission")]
         [Authorize(AuthenticationSchemes = "L1")]
         public async Task<IActionResult> AddUpdateMission([FromBody] MissionDm dm)
         {
-            dm.UpdatedBy = User.FindFirst(ClaimTypes.Name)?.Value;
+            dm.UpdatedBy = GetCurrentUserId();
             return Ok(await missionResource.AddUpdateMission(dm));
         }
 
@@ -87,7 +85,7 @@ namespace Ng22.Controllers
             dm.MissionDm = new MissionDm()
             { 
                 uid = dm.MissionUid,
-                UpdatedBy = User.FindFirst(ClaimTypes.Name)?.Value
+                UpdatedBy = GetCurrentUserId()
             };
             return Ok(await missionResource.AddUpdateMissionDetails(dm));
         }
@@ -99,9 +97,18 @@ namespace Ng22.Controllers
             dm.MissionDm = new MissionDm()
             {
                 uid = dm.MissionUid,
-                UpdatedBy = User.FindFirst(ClaimTypes.Name)?.Value
+                UpdatedBy = GetCurrentUserId()
             };
             return Ok(await missionResource.DeleteMissionDetails(dm));
         }
+
+        [HttpGet("GetAssignedMission")]
+        [Authorize(AuthenticationSchemes = "L1")]
+        public async Task<IActionResult> GetAssignedMission(Guid? missionUid)
+        {
+            return Ok(await missionResource.GetAssignedMission(missionUid));
+        }
+
+        
     }
 }

@@ -14,15 +14,15 @@ namespace Ng22.Helper
             DbUser = AppConfig["DbUser"];
             DbPassword = AppConfig["DbPassword"];
             L1TokenExpireMinute = Convert.ToDouble(AppConfig["L1TokenExpireMinute"]);
-            L2TokenExpireMinute = Convert.ToDouble(AppConfig["L2TokenExpireMinute"]);
+            Timezone = AppConfig["Timezone"];
         }
 
         public static string DbName { get; set; }
         public static string DbServer { get; set; }
         public static string DbPort { get; set; }
         public static string DbUser { get; set; }
-        public static string DbPassword { get; set; }
+        public static string DbPassword { get; set; }        
         public static Double L1TokenExpireMinute { get; set; }
-        public static Double L2TokenExpireMinute { get; set; }        
+        public static string Timezone { get; set; }
     }
 }

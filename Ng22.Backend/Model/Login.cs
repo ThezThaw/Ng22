@@ -14,13 +14,13 @@ namespace Ng22.Backend
     {
         public string token { get; set; }
         public AppUserVm appUser { get; set; }
-        public List<MissionDm> missions { get; set; }
+        public List<MissionVm> missions { get; set; }
 
     }
 
     public class LoginResultL2Vm
     {
         public string token { get; set; }
-        public MissionDetailsDm missionDetails { get; set; }
+        public List<MissionDetailsDm> missionDetails { get; set; }
     }
 }

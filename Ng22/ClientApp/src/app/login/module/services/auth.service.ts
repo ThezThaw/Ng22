@@ -3,7 +3,7 @@ import { Router } from '@angular/router';
 import { HttpClient } from '@angular/common/http';
 import { BehaviorSubject, Observable, of, Subscription } from 'rxjs';
 import { map, tap, delay, finalize } from 'rxjs/operators';
-import { LoginRequest, LoginResult } from '../../../shared/models/login.data';
+import { LoginRequest, LoginResult, LoginResultL2 } from '../../../shared/models/login.data';
 import { AppConfigService } from '../../../services/appconfig.service';
 import { MissionService } from '../../../services/mission.service';
 import { AppUser } from '../../../shared/models/app-user.data';
@@ -70,6 +70,11 @@ export class AuthService implements OnDestroy {
         return x;
       }))
       ;
+  }
+
+  l2login(vm: LoginRequest): Observable<any> {
+    return this.http
+      .post<any>(`${this.appCfgSvc.cfg["baseUrl"]}api/auth/token-l2`, vm);
   }
 
   login(username: string, password: string) {

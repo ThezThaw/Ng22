@@ -15,6 +15,7 @@ export class InputboxComponent extends BaseControlComponent {
   @Input() multi: boolean = false;
   @Input() autosizeMinRows: number = 3;
   @Input() autosizeMaxRows: number = 10;
+  @Input() min_max_unit: string;
 
   constructor() {
     super();

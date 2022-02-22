@@ -1,73 +1,98 @@
-import { HttpClient } from "@angular/common/http";
-import { Component, Inject } from "@angular/core";
-import { MatDialogRef, MAT_DIALOG_DATA, MatDialog } from "@angular/material/dialog";
-import { AppConfigService } from "../../services/appconfig.service";
+import { Component, EventEmitter, Input, OnInit, Output } from "@angular/core";
+import { FormBuilder, FormGroup, Validators } from "@angular/forms";
+import { BottomSheetComponent } from "../../shared/controls/bottom-sheet.component";
 import { LoginRequest, LoginResultL2 } from "../../shared/models/login.data";
+import { CommonMethodService } from "../../shared/service";
+import { AuthService } from "../module/services/auth.service";
 
 @Component({
   selector: 'l2-login',
-  template: `<html></html>`,
-})
-export class L2LoginComponent {
-  constructor(private dialog: MatDialog) { }
-
-  show() {
-    const popup = this.dialog.open(L2LoginHolderComponent, {
-      hasBackdrop: true,
-      disableClose: true,
-      width: '50%',
-      height: '50%',
-    });
-    return popup;
-  }
- }
-
-
-@Component({
-  selector: 'l2-login-holder',
   templateUrl: 'l2-login.component.html',
 })
-export class L2LoginHolderComponent {
-  password: string;
-  busy = false;
-  constructor(
-    public dialogRef: MatDialogRef<L2LoginHolderComponent>,
-    @Inject(MAT_DIALOG_DATA) public data: any,
-    private http: HttpClient,
-    private appCfgSvc: AppConfigService) { }
+export class L2LoginComponent implements OnInit {
+  @Input() missionUid;
+  @Output() closeEmitter = new EventEmitter();
 
-  validate() {
+  fg: FormGroup;
+  get c() { return this.fg.controls; }
+  focusElementId = '#passcode';
+  busy: boolean = false;
+
+  constructor(
+    private fb: FormBuilder,
+    private cms: CommonMethodService,
+    private bs: BottomSheetComponent,
+    private authSvc: AuthService) { }
+
+  ngOnInit() {
+    this.fg = this.fb.group({
+      passcode: [null, Validators.required],
+    });
+
+    this.touch();
+    this.cms.focus(this.focusElementId);
+  }
+
+  authenticate() {
+    if (this.fg.invalid) return;
+    this.setBusy(true);
+    let raw = this.fg.getRawValue();
 
     let vm: LoginRequest =
     {
-      userId: 'admin',
-      password: this.password
+      userId: '',
+      password: raw.passcode,
+      missionUid: this.missionUid
     }
 
     this.busy = true;
-    this.http
-      .post<LoginResultL2>(`${this.appCfgSvc.cfg["baseUrl"]}api/auth/token-l2`, vm)
-      .subscribe(x => {
-        this.setLocalStorage(x);
-        this.close(x.missionDetails);
-      }, err => {
-        throw err;
-      });
-      //.pipe(
-      //  map((data) => {
-      //    debugger;
-      //    //this.setLocalStorage(x);
-      //    return null;
-      //  })        
-      //);
-  }
+    //this.authSvc.l2login(vm).subscribe(result => {
+    //  this.setLocalStorage(result);
+    //  this.closeEmitter.emit(result.missionDetails);
+    //}, err => {
+    //  this.setBusy(false);
+    //  this.cms.focus(this.focusElementId);
+    //  this.bs.open(JSON.stringify(err));
+    //});
 
-  close(e) {
-    this.dialogRef.close(e);
+    this.authSvc.l2login(vm).subscribe(result => {
+      if (result.status === true) {
+        this.setLocalStorage(result?.data);
+        this.closeEmitter.emit(result?.data?.missionDetails);
+
+      } else {
+        this.bs.open(result.message);
+      }
+
+      this.setBusy(false);
+      this.touch();
+      this.cms.focus(this.focusElementId);
+
+    }, err => {
+      this.setBusy(false);
+      this.cms.focus(this.focusElementId);
+      this.bs.open(JSON.stringify(err));
+    });
+
   }
 
   setLocalStorage(x: LoginResultL2) {
     localStorage.setItem('token-l2', x.token);    
+  }
+
+  setBusy(busy) {
+    this.busy = busy;
+    if (busy) {
+      this.fg.disable();
+    } else {
+      this.fg.enable();
+    }
+  }
+
+  touch() {
+    for (let c in this.fg.controls) {
+      this.fg.controls[c].markAsTouched();
+    }
   }
 
 }

@@ -40,8 +40,12 @@ namespace Ng22
 
             services.AddScoped<IAppUserResource, AppUserResource>();
             services.AddScoped<IMissionResource, MissionResource>();
+            services.AddScoped<ITwoFAResource, TwoFAResource>();
+            services.AddScoped<IAccessRightResource, AccessRightResource>();
             services.AddScoped<IUserDbService, UserDbService>();
             services.AddScoped<IMissionDbService, MissionDbService>();
+            services.AddScoped<ITwoFADbService, TwoFADbService>();
+            services.AddScoped<IAccessRightDbService, AccessRightDbService>();
             services.AddDbContext<Ng22DbContext>(builder => builder
                 .UseMySQL($"Database={Config.DbName};Data Source={Config.DbServer};Port={Config.DbPort};User Id={Config.DbUser};Password={Config.DbPassword};Charset=utf8;"));            
             services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)

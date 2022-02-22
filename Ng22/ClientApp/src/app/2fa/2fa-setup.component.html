@@ -1,0 +1,17 @@
+<form [formGroup]="fg" class="form-group row">
+
+  <inputbox [fg]="fg" [name]="'passcode'"
+            [label]="'Passcode'"
+            [max]="20"
+            [class]="'col-6'"></inputbox>
+
+  <span [class]="'col-12'" style="margin: 0 0 5px 15px; font-size: large; font-style: italic;">
+    Expire After (M:Minute, H:Hour, D:Day)
+  </span>
+
+  <toggle [fg]="fg" [name]="'expiry'"
+          [selected]="selected"
+          [list]="lst"          
+          (valueChangeEmitter)="changeToggle()"></toggle>
+
+</form>

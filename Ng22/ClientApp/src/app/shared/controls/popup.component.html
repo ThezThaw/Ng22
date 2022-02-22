@@ -15,3 +15,21 @@
   <add-instruction (closeEmitter)="close($event)"
                    [md]="data.data"></add-instruction>
 </div>
+
+<div *ngIf="data.type == LibConst.PopupTypeL2Login">
+  <button mat-icon-button style="float: right; top: -24px; right: -24px;" [mat-dialog-close]="false">
+    <mat-icon class="close-icon">close</mat-icon>
+  </button>
+  <l2-login [missionUid]="data.data" (closeEmitter)="close($event)"></l2-login>
+</div>
+
+<div *ngIf="data.type == LibConst.PopupTypeAddDuration">
+  <button mat-icon-button style="float: right; top: -24px; right: -24px;" [mat-dialog-close]="false">
+    <mat-icon class="close-icon">close</mat-icon>
+  </button>
+  <add-exp-duration [lst]="data.data" (closeEmitter)="close($event)"></add-exp-duration>
+</div>
+
+
+
+

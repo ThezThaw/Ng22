@@ -1,5 +1,4 @@
 ﻿using Microsoft.AspNetCore.Authorization;
-using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.IdentityModel.Tokens;
 using Ng22.Backend;
@@ -8,6 +7,7 @@ using Ng22.Helper;
 using System;
 using System.Collections.Generic;
 using System.IdentityModel.Tokens.Jwt;
+using System.Linq;
 using System.Security.Claims;
 using System.Text;
 using System.Threading.Tasks;
@@ -16,14 +16,18 @@ namespace Ng22.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
-    public class AuthController : ControllerBase
+    public class AuthController : BaseController
     {
         private readonly IMissionResource missionResource;
         private readonly IAppUserResource appUserResource;
-        public AuthController(IMissionResource missionResource, IAppUserResource appUserResource)
+        private readonly ITwoFAResource twoFAResource;
+        private readonly ITwoFADbService twoFADbService;
+        public AuthController(IMissionResource missionResource, IAppUserResource appUserResource, ITwoFAResource twoFAResource, ITwoFADbService twoFADbService)
         {
             this.missionResource = missionResource;
             this.appUserResource = appUserResource;
+            this.twoFAResource = twoFAResource;
+            this.twoFADbService = twoFADbService;
         }
 
         [HttpPost("token-l1")]
@@ -37,19 +41,17 @@ namespace Ng22.Controllers
                     var claims = new List<Claim>()
                     {
                         new Claim(JwtRegisteredClaimNames.UniqueName, loginRequestVm.userId),
-                        new Claim(ClaimTypes.Name, "admin"),
-                        new Claim(ClaimTypes.Role, "admin")
+                        new Claim(ClaimTypes.Name, VerifiedUser.nickName)
                     };
                     var key = new SymmetricSecurityKey(Encoding.ASCII.GetBytes("ng22-1234567890123456789"));
                     var credential = new SigningCredentials(key, SecurityAlgorithms.HmacSha256);
-                    var expire = DateTime.Now.AddMinutes(Config.L1TokenExpireMinute);
+                    var expire = DateTime.UtcNow.NowByTimezone(Config.Timezone).AddMinutes(Config.L1TokenExpireMinute);
                     var token = new JwtSecurityToken(
                                         issuer: "Ng22",
                                         audience: "L1",
                                         claims: claims, 
                                         expires: expire, 
                                         signingCredentials: credential);
-
 
                     return Ok(new LoginResultVm()
                     {
@@ -75,33 +77,46 @@ namespace Ng22.Controllers
         {
             try
             {
-
-                if (loginRequestVm.password == "123")
+                var twoFA = await twoFAResource.Get2FA(loginRequestVm.password);
+                var Valid2FA = twoFA.FirstOrDefault();
+                if (Valid2FA != null && Valid2FA.Expire >= DateTime.UtcNow.NowByTimezone(Config.Timezone))
                 {
+                    Valid2FA.LastUsedBy = GetCurrentUserId();
+                    await twoFADbService.AddUpdate2FA(Valid2FA);
+
                     var claims = new List<Claim>()
                     {
                         new Claim(JwtRegisteredClaimNames.UniqueName, loginRequestVm.userId),
-                        new Claim(ClaimTypes.Name, "admin-l2"),
-                        new Claim(ClaimTypes.Role, "admin-l2")
+                        new Claim(ClaimTypes.Name, GetCurrentUserId())
                     };
                     var key = new SymmetricSecurityKey(Encoding.ASCII.GetBytes("ng22-1234567890123456789"));
                     var credential = new SigningCredentials(key, SecurityAlgorithms.HmacSha256);
-                    var expire = DateTime.Now.AddMinutes(Config.L2TokenExpireMinute);
+                    var expire = Valid2FA.Expire;
                     var token = new JwtSecurityToken(
                                         issuer: "Ng22",
                                         audience: "L2",
                                         claims: claims,
                                         expires: expire,
                                         signingCredentials: credential);
-                    return Ok(new LoginResultL2Vm()
-                    {
-                        token = new JwtSecurityTokenHandler().WriteToken(token),
-                        missionDetails = await missionResource.GetMissionDetails(loginRequestVm.missionUid)
-                    });
+
+                    var r = new StatusResult<LoginResultL2Vm>() 
+                    { 
+                        status = true,
+                        data = new LoginResultL2Vm()
+                        {
+                            token = new JwtSecurityTokenHandler().WriteToken(token),
+                            missionDetails = await missionResource.GetMissionDetails(loginRequestVm.missionUid)
+                        }
+                    };
+                    return Ok(r);
                 }
                 else
                 {
-                    return Unauthorized();
+                    return Ok(new StatusResult<LoginResultL2Vm>()
+                    { 
+                        status = false,
+                        message = new List<string>() { "ACCESS DENIED !" }
+                    });
                 }
             }
             catch (Exception ex)

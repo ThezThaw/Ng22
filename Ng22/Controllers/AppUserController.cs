@@ -14,7 +14,7 @@ namespace Ng22.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
-    public class AppUserController : ControllerBase
+    public class AppUserController : BaseController
     {
         private readonly IAppUserResource appUserResource;
         private readonly IUserDbService userDbService;
@@ -48,16 +48,9 @@ namespace Ng22.Controllers
 
         [HttpGet("GetUserList")]
         [Authorize(AuthenticationSchemes = "L1")]
-        public async Task<IActionResult> GetUserList(string filter)
+        public async Task<IActionResult> GetUserList(string filter, bool excludeAr)
         {
-            return Ok(await appUserResource.GetUserList(filter));
-        }
-
-        [HttpGet("GetAvailablePageByUser/{userId}")]
-        [Authorize(AuthenticationSchemes = "L1")]
-        public async Task<IActionResult> GetAvailablePageByUser(string userId)
-        {
-            return Ok(await appUserResource.GetAvailablePageByUser(userId));
+            return Ok(await appUserResource.GetUserList(filter, excludeAr));
         }
 
         [HttpPost("AddUser")]
@@ -72,22 +65,6 @@ namespace Ng22.Controllers
         public async Task<IActionResult> UpdateUser([FromBody] AppUserVm vm)
         {
             return Ok(await appUserResource.UpdateUser(vm));
-        }
-
-        [HttpGet("SearchPage")]
-        [Authorize(AuthenticationSchemes = "L1")]
-        public async Task<IActionResult> SearchPage(string filter)
-        {
-            var lst = await userDbService.GetPage(x => x.PageCode.Contains(filter) || x.MenuName.Contains(filter));
-            return Ok(await lst.ToListAsync());
-        }
-
-        [HttpPost("PageSetup")]
-        [Authorize(AuthenticationSchemes = "L1")]
-        public async Task<IActionResult> PageSetup(UserPageRelationDm dm)
-        {
-            await userDbService.PageSetup(dm);
-            return Ok();
         }
     }
 }

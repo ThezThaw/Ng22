@@ -75,6 +75,7 @@ export class MissionSetupComponent implements OnInit, OnDestroy {
     let h: Header = {
       btn: [{
         name: 'Add New Mission',
+        icon: 'add',
         func: 'addNewMission',
         ownby: Const.CurrentPageMissionSetup
       }]

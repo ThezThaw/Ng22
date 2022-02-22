@@ -1,5 +1,7 @@
 <form [formGroup]="fg" class="form-group row">
 
+  <!--[pattern]="'[^\s]+'"-->
+
   <inputbox [fg]="fg" [name]="'userId'"
             [label]="'UserId'"
             [readonly]="user"
@@ -8,6 +10,7 @@
 
   <inputbox [fg]="fg" [name]="'nickName'"
             [label]="'Nick Name'"
+            [max]="100"
             [class]="'col-6'"></inputbox>
 
   <chk [fg]="fg" [name]="'changepassword'" [label]="'Change Password'" *ngIf="user"
@@ -18,18 +21,18 @@
             [label]="'Current Password'" [type]="'password'"
             [class]="'col-6'"></inputbox>
 
-  <inputbox [fg]="fg" [name]="'password'" *ngIf="c.changepassword.value || user === undefined"
+  <inputbox [fg]="fg" [name]="'password'" *ngIf="c.changepassword.value || user === undefined || user === null"
             [label]="'New Password'" [type]="'password'"
             [class]="'col-6'"></inputbox>
 
   <span class="col-6" *ngIf="!self && (c.changepassword.value || user === undefined)"></span>
 
-  <btn [label]="'Save'" (clickEmitter)="save();" [class]="'col-1'" [busy]="busy"></btn>
+  <!--<btn [label]="'Save'" (clickEmitter)="save();" [class]="'col-1'" [busy]="busy"></btn>
   <btn *ngIf="user && user?.userId != Const.AppUserAdmin && !self"
        [label]="'Delete'"
        [color]="'warn'"
        [class]="'col-1'"
        [busy]="busy"
-       (clickEmitter)="delete();"></btn>
+       (clickEmitter)="delete();"></btn>-->
 
 </form>

@@ -1,0 +1,87 @@
+<div *ngIf="addNew">
+  <two-fa-setup (gobackEmitter)="switchUi();"></two-fa-setup>
+</div>
+
+<div *ngIf="!addNew">
+
+  <ng-container *ngFor="let fa of lst;let idx = index;">
+    <mat-card style="margin-bottom: -15px;">
+      <mat-card-title-group>
+        <mat-card-title>
+          <div style="display: flex; align-items: center;">
+            <mat-icon [ngClass]="{
+                        'expire': isExpired(fa.expire),
+                        'blink-orange' : (fa.lastUsedBy && !isExpired(fa.expire)),
+                        'blink-green': (!fa.lastUsedBy && !isExpired(fa.expire))
+                      }">brightness_1</mat-icon>
+            &nbsp;{{fa.passcode}}
+          </div>
+        </mat-card-title>
+        <mat-card-subtitle>
+          <div style="display:flex; align-items:flex-end;">
+            <mat-icon>{{isExpired(fa.expire) ? 'block' : 'access_time'}}</mat-icon>
+            &nbsp;
+            {{ isExpired(fa.expire) ? 'Expired' : 'Expire' }}
+            {{fa.expire | fromNow}}
+            <span *ngIf="fa.lastUsedBy">
+              &nbsp;&bull;&nbsp;
+              Last Used By {{fa.lastUsedBy}},&nbsp;{{fa.lastUsedOn | fromNow}}
+            </span>
+          </div>
+        </mat-card-subtitle>
+        <span>
+          <button mat-raised-button color="warn"
+                  (click)="delete(fa)" [disabled]="busy">
+            <mat-icon style="margin: 0 -5px 0 -10px;">delete_forever</mat-icon>&nbsp;
+            Remove
+          </button>
+        </span>
+      </mat-card-title-group>
+    </mat-card>
+    <br />
+  </ng-container>
+
+</div>
+
+<style>
+  .mat-card-subtitle {
+    margin-bottom:0;
+  }
+
+  .expire {
+    color: red;
+  }
+
+  .blink-orange {
+    color: orange;
+    animation: blinking 3s infinite;
+  }
+
+  .blink-green {
+    color: forestgreen;    
+    animation: blinking 5s infinite;
+  }
+
+  @keyframes blinking {
+    0% {
+      opacity: 0%;
+    }
+
+    25% {
+      opacity: 50%;
+    }
+
+    50% {
+      opacity: 100%;
+    }
+
+    75% {
+      opacity: 50%;
+    }
+
+    100% {
+      opacity: 0%;
+    }
+  }
+</style>
+

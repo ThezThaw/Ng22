@@ -1,15 +1,42 @@
-<form [formGroup]="fg" class="form-group row">
+<div *ngIf="addNew">  
+  <mission-assign [mur]="selected" (gobackEmitter)="switchUi();"></mission-assign>
+</div>
 
-  <auto [fg]="fg" [name]="'mission'" [label]="'Mission'"
-        [class]="'col-6'"
-        [require]="true"
-        [service]="missionSvc" [method]="'searchMission'" [displayField]="'title'"></auto>
+<div *ngIf="!addNew">
 
-  <auto [fg]="fg" [name]="'user'" [label]="'User'"
-        [class]="'col-6'"
-        [require]="true"
-        [service]="appUserSvc" [method]="'getUserList'" [displayField]="'nickName'"></auto>
+  <ng-container *ngFor="let mur of lst;let idx = index;">
+    <mat-card style="margin-bottom: -15px;">
+      <mat-card-title (click)="edit(mur)">
+        <div style="display: flex; align-items: center;">
+          <mat-icon style="color: #0366d6">flag</mat-icon>&nbsp;
+          <span class="custom-a">{{mur.missionVm.title}}</span>
+        </div>        
+      </mat-card-title>
+      <mat-card-subtitle> &bull; {{mur.updatedBy}} updated {{mur.updatedOn | fromNow}}</mat-card-subtitle>
+      <mat-card-content>
 
-  <btn [icon]="'done'" (clickEmitter)="save()"></btn>
 
-</form>
+        <mat-card>
+          <mat-card-header>
+            <mat-card-title style="margin-left: -15px; margin-top: -10px;">Assigned User(s)</mat-card-title>
+          </mat-card-header>
+
+          <mat-chip-list>
+            <mat-chip *ngFor="let u of mur.appUserVm;">
+              <mat-icon>person</mat-icon>&nbsp;
+              {{u.userId}} <span *ngIf="u.nickName">&nbsp;&bull;&nbsp;{{u.nickName}}</span>
+            </mat-chip>
+          </mat-chip-list>
+
+        </mat-card>
+
+
+
+        
+
+      </mat-card-content>
+    </mat-card>
+    <br />
+  </ng-container>
+
+</div>

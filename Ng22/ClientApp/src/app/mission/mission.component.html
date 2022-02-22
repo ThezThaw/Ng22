@@ -1,11 +1,52 @@
 <mat-accordion>
-  <mat-expansion-panel *ngFor="let m of missions;let idx = index;" #panel>
-    <mat-expansion-panel-header>
-      <mat-panel-title>
-        {{m.title}}
-      </mat-panel-title>
-    </mat-expansion-panel-header>    
-    <mission-details *ngIf="panel.expanded" [missionUid]="m.uid"></mission-details>
-  </mat-expansion-panel>
-  <br />
+
+  <ng-container *ngFor="let m of missions;let idx = index;">
+    <mat-expansion-panel #panel (closed)="m.missionDetails = null">
+      <mat-expansion-panel-header>
+        <mat-panel-title style="color: #0366d6">
+          <mat-icon>flag</mat-icon>&nbsp;
+          {{m.title}}
+        </mat-panel-title>
+      </mat-expansion-panel-header>
+      {{m.brief}}
+      <br />
+      <br />
+
+      <ng-container *ngFor="let md of m.missionDetails;let idx = index;">
+        <mat-card>
+          <mat-card-subtitle style="margin-bottom: 10px; display: flex; justify-content: flex-end;">
+            Updated {{md.updatedOn | fromNow}}
+          </mat-card-subtitle>
+          {{md.instruction}}
+        </mat-card>
+        <br />
+      </ng-container>
+
+
+      <!--<mat-divider *ngIf="mission.detailsCount > 0"></mat-divider>
+  <mat-card-actions align="start" *ngIf="mission.detailsCount > 0">
+    <span style="padding:5px 15px 5px 15px; background-color: #55b559; color: #ffffff; border-radius: 20px;">
+      {{mission.detailsCount}}&ensp;Instruction(s)
+    </span>
+  </mat-card-actions>-->
+
+
+      <mat-action-row *ngIf="!m.missionDetails && m.detailsCount > 0">
+
+        <!--<span style="padding:8px 15px 5px 15px; background-color: #55b559; color: #ffffff; border-radius: 20px;">
+      {{m.detailsCount}}&ensp;Instruction(s)
+    </span>-->
+
+        <button mat-raised-button color="primary" (click)="viewDetails(m)"
+                style="margin-right:10px;"
+                [matBadge]="m.detailsCount"
+                matBadgeColor="warn">
+          <mat-icon>visibility</mat-icon>
+          View Details
+        </button>
+      </mat-action-row>
+    </mat-expansion-panel>
+
+  </ng-container>
+  
 </mat-accordion>

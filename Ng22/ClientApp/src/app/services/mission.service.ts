@@ -31,20 +31,26 @@ export class MissionService {
     }));
   }
 
-  getMissionDetails(l2: boolean, missionUid: string): Observable<any> {
+  getMissionDetails(l2: boolean, missionUid: string): Observable<MissionDetails[]> {
     var params = new HttpParams().set('missionUid', missionUid);
     var url = l2 ? `${this.appCfgSvc.cfg["baseUrl"]}api/mission/l2/GetMissionDetails` : `${this.appCfgSvc.cfg["baseUrl"]}api/mission/GetMissionDetails`;
-    return this.http.get<any>(url,{ params: params });
+    return this.http.get<MissionDetails[]>(url,{ params: params });
   }
 
-  searchMission(filter: string = ''): Observable<Mission[]> {
-    var params = new HttpParams().set('filter', filter);
+  searchMission(filter: string = '', excludeAssigned: boolean = false): Observable<Mission[]> {
+    var params = new HttpParams()
+      .set('filter', filter)
+      .set('excludeAssigned', excludeAssigned);
     return this.http.get<Mission[]>(`${this.appCfgSvc.cfg["baseUrl"]}api/mission/SearchMission`,
       { params: params });
   }
 
-  linkMission(data: MissionUserRelation): Observable<any> {
-    return this.http.post<any>(`${this.appCfgSvc.cfg["baseUrl"]}api/mission/LinkMission`, data);
+  AssignMission(data: MissionUserRelation[]): Observable<any> {
+    return this.http.post<any>(`${this.appCfgSvc.cfg["baseUrl"]}api/mission/AssignMission`, data);
+  }
+
+  UnAssignAllUser(missionUid): Observable<any> {
+    return this.http.post<any>(`${this.appCfgSvc.cfg["baseUrl"]}api/mission/UnAssignAllUser/${missionUid}`,null);
   }
 
   AddUpdateMission(mission: Mission): Observable<any> {
@@ -57,5 +63,11 @@ export class MissionService {
 
   DeleteMissionDetails(md: MissionDetails): Observable<any> {
     return this.http.post<any>(`${this.appCfgSvc.cfg["baseUrl"]}api/mission/DeleteMissionDetails`, md);
+  }
+
+  GetAssignedMission(missionUid?): Observable<any> {
+    var params = missionUid ? new HttpParams().set('missionUid', missionUid) : new HttpParams();
+    return this.http.get<any>(`${this.appCfgSvc.cfg["baseUrl"]}api/mission/GetAssignedMission`,
+      { params: params });
   }
 }

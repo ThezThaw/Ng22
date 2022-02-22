@@ -32,6 +32,7 @@ export interface HeaderButton {
   func: string;
   color?: string;
   ownby: string;
+  icon?: string;
 }
 
 export interface HeaderTitle {

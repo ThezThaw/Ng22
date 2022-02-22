@@ -4,6 +4,7 @@ import { Mission, MissionDetails } from "./mission.data";
 export interface LoginRequest {
   userId: string;
   password: string;
+  missionUid?: string;
 }
 
 export interface LoginResult {

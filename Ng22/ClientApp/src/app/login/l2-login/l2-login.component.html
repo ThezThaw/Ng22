@@ -1,26 +1,12 @@
+<form [formGroup]="fg" class="form-group row">
 
-  <h1 mat-dialog-title>Ng22</h1>
-  <div mat-dialog-content>
+  <inputbox [fg]="fg" [name]="'passcode'"
+            [label]="'Passcode'"
+            ></inputbox>
 
-    <form class="form-signin" (ngSubmit)="validate()">
-      <div class="form-label-group">
-        <input type="password"
-               id="inputPassword"
-               name="password"
-               [(ngModel)]="password"
-               class="form-control"
-               placeholder="Password"
-               required />
-        <label for="inputPassword"></label>
-      </div>
-      <button type="submit"
-              class="btn btn-lg btn-primary btn-block"
-              [disabled]="busy">
-        Sign in
-      </button>
-      <button class="btn btn-lg btn-warning btn-block" [mat-dialog-close]="'cancel'">Cancel</button>
-    </form>
-  </div>
+  <btn [label]="'Authenticate'" (clickEmitter)="authenticate();" [busy]="busy"></btn>
+
+</form>
 
 
 

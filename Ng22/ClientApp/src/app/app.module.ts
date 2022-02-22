@@ -22,11 +22,10 @@ import { MatSidenavModule } from '@angular/material/sidenav';
 import { MatListModule } from '@angular/material/list';
 import { CommonModule } from '@angular/common';
 import { MissionComponent } from './mission/mission.component';
-import { MissionDetailsComponent } from './mission/mission-details.component';
 import { SpeedDialFabComponent } from './shared/controls/speed-dial/speed-dial-fab.component';
 import { AppLayoutComponent } from './layout/app-layout.component';
 import { SidebarComponent } from './sidebar/sidebar.component';
-import { L2LoginComponent, L2LoginHolderComponent } from './login/l2-login/l2-login.component';
+import { L2LoginComponent } from './login/l2-login/l2-login.component';
 import { AppConfigService } from './services/appconfig.service';
 import { UserListComponent } from './app-user/user-list.component';
 import { UserCardComponent } from './app-user/user-card.component';
@@ -34,10 +33,8 @@ import { InputboxComponent } from './shared/controls/inputbox.component';
 import { LabelboxComponent } from './shared/controls/lblbox.component';
 import { ButtonComponent } from './shared/controls/btn.component';
 import { MissionSetupComponent } from './mission/create/mission-setup.component';
-import { AutoCompleteComponent } from './shared/controls/auto-complete.component';
 import { MatAutocompleteModule } from '@angular/material/autocomplete';
 import { MissionLinkComponent } from './mission/link/mission-link.component';
-import { PageSetupComponent } from './app-user/page-setup.component';
 import { NotifierModule, NotifierOptions } from "angular-notifier";
 import { BottomSheet, BottomSheetComponent } from './shared/controls/bottom-sheet.component';
 import { MatBottomSheetModule } from "@angular/material/bottom-sheet";
@@ -49,6 +46,18 @@ import { MatTableModule } from '@angular/material/table';
 import { CreateMissionComponent } from './mission/create/create-mission.component';
 import { MatCardModule } from '@angular/material/card';
 import { FromNowPipe } from './shared/controls/pipe/dateFormat';
+import { MissionAssignComponent } from './mission/link/mission-assign.component';
+import { MatChipsModule } from '@angular/material/chips';
+import { TwoFAComponent } from './2fa/2fa.component';
+import { TwoFASetupComponent } from './2fa/2fa-setup.component';
+import { ToggleComponent } from './shared/controls/toggle.component';
+import { MatButtonToggleModule } from '@angular/material/button-toggle';
+import { MatProgressBarModule } from '@angular/material/progress-bar';
+import { MatDividerModule } from '@angular/material/divider';
+import { AddExpireDurationComponent } from './2fa/add-exp-duration.component';
+import { AccessRightComponent } from './app-user/access-right/access-right.component';
+import { AccessRightSetupComponent } from './app-user/access-right/access-right-setup.component';
+import { MatBadgeModule } from '@angular/material/badge';
 
 //https://stackblitz.com/edit/angular-notifier-demo?file=src%2Fapp%2Fapp.module.ts
 const customNotifierOptions: NotifierOptions = {
@@ -102,17 +111,20 @@ const customNotifierOptions: NotifierOptions = {
     MatCheckboxModule,
     MatCardModule,
     MatRippleModule,
-    //MatBadgeModule,
+    MatBadgeModule,
     //MatTabsModule,
     MatIconModule,
     MatTableModule,
-    //MatProgressBarModule,
+    MatProgressBarModule,
     MatBottomSheetModule,
     MatDialogModule,
     MatButtonModule,
     MatToolbarModule,
     MatSidenavModule,
     MatListModule,
+    MatChipsModule,
+    MatButtonToggleModule,
+    MatDividerModule,
     //MatExpansionModule,
     CommonModule,
   ]
@@ -124,21 +136,21 @@ export class MatModule { }
     InputboxComponent,
     LabelboxComponent,
     ButtonComponent,
-    AutoCompleteComponent,
     BottomSheet,
     BottomSheetComponent,
     CheckboxComponent,
     FromNowPipe,
+    ToggleComponent,
   ],
   exports: [
     InputboxComponent,
     LabelboxComponent,
     ButtonComponent,
-    AutoCompleteComponent,
     BottomSheet,
     BottomSheetComponent,    
     CheckboxComponent,
     FromNowPipe,
+    ToggleComponent,
   ],
   imports: [
     MatModule
@@ -158,20 +170,24 @@ export class CustomControlModule {
     AppComponent,
     HomeComponent,
     LoginComponent,
-    L2LoginHolderComponent,
+    L2LoginComponent,
     MissionComponent,
-    MissionDetailsComponent,
     SpeedDialFabComponent,
     UserListComponent,
     UserCardComponent,
     SidebarComponent,
     MissionSetupComponent,
     MissionLinkComponent,
-    PageSetupComponent,
     AddInstructionComponent,
     PopupComponent,
     PopupPlaceholderComponent,
     CreateMissionComponent,
+    MissionAssignComponent,
+    TwoFAComponent,
+    TwoFASetupComponent,
+    AddExpireDurationComponent,
+    AccessRightComponent,
+    AccessRightSetupComponent,
   ],
   imports: [
     BrowserModule.withServerTransition({ appId: 'ng-cli-universal' }),
@@ -186,7 +202,7 @@ export class CustomControlModule {
     CustomControlModule,
   ],
   providers: [
-    L2LoginComponent, BottomSheetComponent, PopupComponent,
+    BottomSheetComponent, PopupComponent,
     {
       provide: MAT_DIALOG_DEFAULT_OPTIONS,
       useValue: { hasBackdrop: true }

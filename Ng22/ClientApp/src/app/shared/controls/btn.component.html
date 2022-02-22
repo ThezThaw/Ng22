@@ -1,13 +1,16 @@
 <div class="form-group col" style="margin-top:7px;">
-  <button *ngIf="icon" mat-mini-fab [color]="color"            
+  <!--<button *ngIf="icon" mat-mini-fab [color]="color"            
             [style.fontSize.px]="LibConst.ValueSize"
             (click)="emitEvent();">{{label}}
       <mat-icon *ngIf="icon" style="margin:-5px 0 0 -5px;font-size:30px;">{{icon}}</mat-icon>
-    </button>
-    <button *ngIf="!icon" mat-raised-button [color]="color"
-            [disabled]="busy"
-            [style.fontSize.px]="LibConst.LabelSize"
-            style="margin-top: -4px;height:44px;"
-            (click)="emitEvent();">{{label}}</button>
+    </button>-->
+  <button mat-raised-button [color]="color"
+          [disabled]="busy"
+          [style.fontSize.px]="LibConst.LabelSize"
+          style="margin-top: -4px;height:44px;"
+          (click)="emitEvent();">
+    <mat-icon *ngIf="icon">{{icon}}</mat-icon>
+    {{label}}
+  </button>
 </div>
 

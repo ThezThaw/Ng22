@@ -22,15 +22,17 @@
 
     <ng-container *ngFor="let md of lst;let idx = index;">
       <mat-card>
-        <mat-card-subtitle>Updated on {{md.updatedDt | fromNow}}</mat-card-subtitle>
+        <mat-card-subtitle>Updated {{md.updatedOn | fromNow}}</mat-card-subtitle>
         {{md.instruction}}
         <mat-card-actions>
           <button mat-raised-button color="primary"
                   (click)="addInstruction(md)" [disabled]="busy">
+            <mat-icon>edit</mat-icon>
             Edit Instruction
           </button>
           <button mat-raised-button color="warn"
                   (click)="deleteInstruction(md)" [disabled]="busy">
+            <mat-icon>delete_forever</mat-icon>
             Delete Instruction
           </button>
         </mat-card-actions>

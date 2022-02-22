@@ -1,6 +1,7 @@
 <div class="form-group col" style="margin-top:25px;">
   <div [formGroup]="fg" [ngClass]="readonly ? 'col readonly' : 'col'">
-    <mat-checkbox [formControlName]="name" 
+    <mat-checkbox [formControlName]="name"
+                  color="primary"
                   [style.fontSize.px]="LibConst.ValueSize"
                   (change)="emitEvent();">{{label}}</mat-checkbox>
   </div>  

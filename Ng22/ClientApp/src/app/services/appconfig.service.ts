@@ -16,8 +16,7 @@ export class AppConfigService {
     return this.http.get('/assets/appconfig.json')
       .toPromise()
       .then(data => {
-        this.cfg = data;
-        Const.dbounceTime = Number(this.cfg['dbounceTime']) * 1000;        
+        this.cfg = data;    
       });
   }
 }

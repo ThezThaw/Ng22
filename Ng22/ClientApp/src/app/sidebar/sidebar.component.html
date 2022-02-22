@@ -1,7 +1,8 @@
 <div>
-  <mat-selection-list #menus [multiple]="false">
+  <mat-selection-list #menus [multiple]="false">    
     <mat-list-option *ngFor="let menu of menuList" [value]="menu"
                      (click)="clickEmitter.emit(menu)">
+      <mat-icon mat-list-icon>{{menu.icon ? menu.icon : 'blur_on'}}</mat-icon>
       {{menu.menuName}}
     </mat-list-option>
   </mat-selection-list>

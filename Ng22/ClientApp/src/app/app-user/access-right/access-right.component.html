@@ -1,0 +1,48 @@
+<div *ngIf="addNew">  
+  <access-right-setup [upr]="selected" (gobackEmitter)="switchUi();"></access-right-setup>
+</div>
+
+<div *ngIf="!addNew">
+
+  <ng-container *ngFor="let upr of lst;let idx = index;">
+    <mat-card style="margin-bottom: -15px;">
+      <mat-card-title (click)="edit(upr)">
+        <div style="display: flex; align-items: center;">
+          <mat-icon style="color: #0366d6">person</mat-icon>&nbsp;
+          <span class="custom-a">{{upr.appUser.userId}}
+            <span *ngIf="upr.appUser.nickName">&nbsp;&bull;&nbsp;{{upr.appUser.nickName}}</span>
+          </span>
+        </div>        
+      </mat-card-title>
+      <mat-card-content>
+
+
+
+        <mat-card>
+          <mat-card-header>
+            <mat-card-title style="margin-left: -15px; margin-top: -10px;">Granted Page(s)</mat-card-title>
+          </mat-card-header>
+
+          <mat-chip-list>
+            <mat-chip *ngFor="let p of upr.pages;">
+              <mat-icon>{{p.icon ? p.icon : 'blur_on'}}</mat-icon>&nbsp;
+              {{p.menuName}}
+            </mat-chip>
+          </mat-chip-list>
+
+        </mat-card>
+
+
+
+
+
+
+
+        
+
+      </mat-card-content>
+    </mat-card>
+    <br />
+  </ng-container>
+
+</div>

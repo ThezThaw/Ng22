@@ -27,21 +27,7 @@ namespace Ng22.Backend
             await ctx.SaveChangesAsync();
         }
 
-        public async Task<List<PageDm>> GetAvailablePageByUser(string userId)
-        {
-            return await ctx.UserPageRelationTbl
-                .Include(x => x.PageDm)
-                .Include(x => x.AppUserDm)
-                .Where(x => x.AppUserDm.userId == userId)
-                .Select(x => x.PageDm)
-                .ToListAsync();
-        }
-
-        public async Task<IQueryable<PageDm>> GetPage(Expression<Func<PageDm, bool>> predicate)
-        {
-            var query = ctx.PageTbl.Where(predicate);
-            return await Task.FromResult(query);
-        }
+        
 
         public async Task<AppUserDm> GetUser(string userId)
         {
@@ -52,25 +38,20 @@ namespace Ng22.Backend
 
         public async Task<IQueryable<AppUserDm>> GetUserList(Expression<Func<AppUserDm, bool>> predicate)
         {
-            var query = ctx.AppUserTbl.Where(predicate);
+            var query = ctx.AppUserTbl
+                .Include(x => x.AccessRight)
+                .Where(predicate)
+                .OrderBy(x => x.userId)
+                .AsNoTracking();
             return await Task.FromResult(query);
-        }
-
-        public async Task PageSetup(UserPageRelationDm dm)
-        {
-            ctx.UserPageRelationTbl.Add(dm);
-            await ctx.SaveChangesAsync();
         }
     }
 
     public interface IUserDbService
-    {
-        Task<List<PageDm>> GetAvailablePageByUser(string userId);
+    {        
         Task<IQueryable<AppUserDm>> GetUserList(Expression<Func<AppUserDm, bool>> predicate);
         Task<AppUserDm> GetUser(string userId);
         Task AddUser(AppUserDm dm);
-        Task UpdateUser(AppUserDm dm);
-        Task PageSetup(UserPageRelationDm dm);
-        Task<IQueryable<PageDm>> GetPage(Expression<Func<PageDm, bool>> predicate);
+        Task UpdateUser(AppUserDm dm);        
     }
 }

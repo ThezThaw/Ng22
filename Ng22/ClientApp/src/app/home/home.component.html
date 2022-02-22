@@ -19,11 +19,16 @@
 </div>
 
 <div *ngIf="pageCode == Const.PageCodePageSetup">
-  <page-setup></page-setup>
+  <!--<page-setup></page-setup>-->
+  <access-right></access-right>
 </div>
 
 <div *ngIf="pageCode == Const.PageCodeUserInfo">
   <user-card [user]="user" [self]="true"></user-card>
+</div>
+
+<div *ngIf="pageCode == Const.PageCode2FA">
+  <two-fa></two-fa>
 </div>
 
 <div *ngIf="pageCode === undefined"

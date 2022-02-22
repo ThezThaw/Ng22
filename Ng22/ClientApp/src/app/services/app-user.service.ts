@@ -1,7 +1,7 @@
 import { HttpClient, HttpParams } from "@angular/common/http";
 import { Injectable } from "@angular/core";
 import { Observable } from "rxjs";
-import { AppUser, Page, UserPageRelation } from "../shared/models/app-user.data";
+import { AppUser } from "../shared/models/app-user.data";
 import { StatusResult } from "../shared/models/shared-data.model";
 import { AppConfigService } from "./appconfig.service";
 
@@ -17,12 +17,10 @@ export class AppUserService {
     this.url = `${this.appCfgSvc.cfg["baseUrl"]}api/appuser/`;
   }
 
-  getAvailablePageByUser(userId): Observable<Page[]> {
-    return this.http.get<Page[]>(`${this.url}GetAvailablePageByUser/${userId}`);
-  }
-
-  getUserList(filter: string = ''): Observable<AppUser[]> {
-    var params = new HttpParams().set('filter', filter);
+  getUserList(filter: string = '', excludeAr: boolean = false): Observable<AppUser[]> {
+    var params = new HttpParams()
+      .set('filter', filter)
+      .set('excludeAr', excludeAr);
     return this.http.get<AppUser[]>(`${this.url}GetUserList/`,
       { params: params });
   }
@@ -30,15 +28,5 @@ export class AppUserService {
   createUpdate(user: AppUser, isnew: boolean): Observable<StatusResult> {
     let url = isnew ? `${this.url}AddUser` : `${this.url}UpdateUser`;
     return this.http.post<StatusResult>(url, user);
-  }
-
-  searchPage(filter: string): Observable<Page[]> {
-    var params = new HttpParams().set('filter', filter);
-    return this.http.get<Page[]>(`${this.url}SearchPage`,
-      { params: params });
-  }
-
-  pageSetup(data: UserPageRelation): Observable<any> {
-    return this.http.post<any>(`${this.url}PageSetup`, data);
   }
 }
