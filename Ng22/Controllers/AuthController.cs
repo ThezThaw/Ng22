@@ -45,7 +45,8 @@ namespace Ng22.Controllers
                     };
                     var key = new SymmetricSecurityKey(Encoding.ASCII.GetBytes("ng22-1234567890123456789"));
                     var credential = new SigningCredentials(key, SecurityAlgorithms.HmacSha256);
-                    var expire = DateTime.UtcNow.NowByTimezone(Config.Timezone).AddMinutes(Config.L1TokenExpireMinute);
+                    //var expire = DateTime.UtcNow.NowByTimezone(Config.Timezone).AddMinutes(Config.L1TokenExpireMinute);
+                    var expire = DateTime.Now.AddMinutes(Config.L1TokenExpireMinute);
                     var token = new JwtSecurityToken(
                                         issuer: "Ng22",
                                         audience: "L1",
@@ -91,7 +92,8 @@ namespace Ng22.Controllers
                     };
                     var key = new SymmetricSecurityKey(Encoding.ASCII.GetBytes("ng22-1234567890123456789"));
                     var credential = new SigningCredentials(key, SecurityAlgorithms.HmacSha256);
-                    var expire = Valid2FA.Expire;
+                    var diff = Valid2FA.Expire - DateTime.UtcNow.NowByTimezone(Config.Timezone);
+                    var expire = DateTime.Now.AddTicks(diff.Ticks);
                     var token = new JwtSecurityToken(
                                         issuer: "Ng22",
                                         audience: "L2",

@@ -1,42 +1,42 @@
-﻿<!--<span class="ng22" style="color: #1b6ec2;">Ng22</span>-->
+<mat-progress-bar *ngIf="busy" mode="indeterminate" style="position:fixed;top:0;"></mat-progress-bar>
+
+<!--<span class="ng22" style="color: #1b6ec2;">Ng22</span>-->
 <span class="blink-text" style="font-weight:bolder">၊|၊ အရေးတော်ပုံ အောင်တော့မည် ၊|၊</span>
 <br />
 
-  <form class="form-signin" (ngSubmit)="login()">
-    <div class="form-label-group">
-      <input
-        type="text"
-        id="UserId"
-        name="username"
-        [(ngModel)]="username"
-        class="form-control"
-        placeholder="Username"
-        required
-        autofocus
-      />
-      <label for="userName">UserId</label>
-    </div>
-    <div class="form-label-group">
-      <input
-        type="password"
-        id="inputPassword"
-        name="password"
-        [(ngModel)]="password"
-        class="form-control"
-        placeholder="Password"
-        required
-      />
-      <label for="inputPassword">Password</label>
-    </div>
+
+<form class="form-signin" (ngSubmit)="login()">
+  <div class="form-label-group">
+    <input type="text"
+           id="UserId"
+           name="username"
+           [(ngModel)]="username"
+           class="form-control"
+           placeholder="Username"
+           required
+           autofocus />
+    <label for="userName">UserId</label>
+  </div>
+  <div class="form-label-group">
+    <input type="password"
+           id="inputPassword"
+           name="password"
+           [(ngModel)]="password"
+           class="form-control"
+           placeholder="Password"
+           required />
+    <label for="inputPassword">Password</label>
+  </div>
+
+  <div class="checkbox mb-3 text-danger" *ngIf="loginError">
+    Login failed. Please try again.
+  </div>
+  <button type="submit"
+          class="btn btn-lg btn-primary btn-block"
+          [disabled]="busy">
+    Sign in
+  </button>
+
   
-    <div class="checkbox mb-3 text-danger" *ngIf="loginError">
-      Login failed. Please try again.
-    </div>
-    <button
-      type="submit"
-      class="btn btn-lg btn-primary btn-block"
-      [disabled]="busy"
-    >
-      Sign in
-    </button>
-  </form>
+  
+</form>
