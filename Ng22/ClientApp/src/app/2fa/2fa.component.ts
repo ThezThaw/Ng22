@@ -64,9 +64,15 @@ export class TwoFAComponent implements OnInit, OnDestroy {
       this.setBusy(true);
       this.twoFaSvc.Remove2FA(fa ? fa : empty).subscribe(x => {
 
-        this.notiSvc.notify('error', 'DELETED');
+        if (x.status === true) {
+
+          this.notiSvc.notify('error', 'DELETED');          
+          this.refreshList();
+
+        } else {
+          this.bs.open(x.message);          
+        }
         this.setBusy(false);
-        this.refreshList();
 
       }, err => {
         this.setBusy(false);

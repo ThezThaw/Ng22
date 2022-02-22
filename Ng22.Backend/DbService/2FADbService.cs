@@ -49,7 +49,8 @@ namespace Ng22.Backend
         {
             if (dm.Uid == Guid.Empty)//remove all expired record
             {
-                var all = await ctx.TwoFATbl.Where(x => x.Expire < DateTime.UtcNow.NowByTimezone(Config.Timezone)).ToListAsync();
+                var exp = DateTime.UtcNow.NowByTimezone(Config.Timezone);
+                var all = await ctx.TwoFATbl.Where(x => x.Expire < exp).ToListAsync();
                 ctx.TwoFATbl.RemoveRange(all);
             }
             else
