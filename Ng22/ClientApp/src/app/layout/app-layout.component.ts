@@ -18,7 +18,7 @@ export class AppLayoutComponent implements OnInit, AfterViewChecked {
   busy: boolean;
   isMobile: boolean;
   menuSelected: boolean = false;
-  title; icon;
+  title; icon; currentUser;
 
   showSF;
 
@@ -39,6 +39,7 @@ export class AppLayoutComponent implements OnInit, AfterViewChecked {
 
   ngOnInit() {    
     this.hdrSvc.resetHeader();
+    this.authService.getUserInfo().subscribe(x => this.currentUser = x)
   }
 
   onOutletLoaded(component) {    

@@ -31,7 +31,10 @@
 
 <mat-drawer-container class="example-container" autosize [hasBackdrop]="isMobile">  
   <mat-drawer #drawer class="ng22-sidenav" [mode]="isMobile ? 'over' : 'side'" [opened]="!isMobile">
-    <sidebar (clickEmitter)="menuSelect($event,drawer)"></sidebar>    
+    <sidebar (clickEmitter)="menuSelect($event,drawer)"></sidebar>
+    <span class="label label-success" style="position:fixed;bottom:10px;">
+      Current User &bull; {{currentUser.userId}}
+    </span>
   </mat-drawer>
 
   <div class="content">
