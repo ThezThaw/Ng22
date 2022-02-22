@@ -41,7 +41,7 @@ namespace Ng22.Controllers
                     var claims = new List<Claim>()
                     {
                         new Claim(JwtRegisteredClaimNames.UniqueName, loginRequestVm.userId),
-                        new Claim(ClaimTypes.Name, VerifiedUser.nickName)
+                        new Claim(ClaimTypes.Name, string.IsNullOrEmpty(VerifiedUser.nickName) ? VerifiedUser.userId : VerifiedUser.nickName)
                     };
                     var key = new SymmetricSecurityKey(Encoding.ASCII.GetBytes("ng22-1234567890123456789"));
                     var credential = new SigningCredentials(key, SecurityAlgorithms.HmacSha256);

@@ -74,8 +74,8 @@ namespace Ng22.Backend.Resource
         }
         public async Task<ICollection<TwoFADm>> Get2FA(string passcode = null)
         {
-            //put logic to show 10 expire passcode
-            var lst = await twoFaDbService.Get2FA(x => string.IsNullOrEmpty(passcode) ? true : x.Passcode == passcode && x.Expire >= DateTime.UtcNow.NowByTimezone(Config.Timezone));
+            var exp = DateTime.UtcNow.NowByTimezone(Config.Timezone);
+            var lst = await twoFaDbService.Get2FA(x => string.IsNullOrEmpty(passcode) ? true : (x.Passcode == passcode && x.Expire >= exp));
             return await lst.ToListAsync();
         }
 
