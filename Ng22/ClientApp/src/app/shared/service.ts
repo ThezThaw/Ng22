@@ -40,6 +40,7 @@ export class HeaderService {
   private _header = new BehaviorSubject<Header>(null);
   header$: Observable<Header> = this._header.asObservable();
   public clickEvent$ = new Subject();
+  public isBusy$ = new Subject();
   busy: boolean;
 
   setHeader(header: Header) {
@@ -59,6 +60,7 @@ export class HeaderService {
 
   setBusy(busy) {
     this.busy = busy;
+    this.isBusy$.next(busy);
   }
 }
 

@@ -12,6 +12,8 @@ export class Const {
   public static readonly PageCodePageSetup = 'PAGESETUP';
   public static readonly PageCodeUserInfo = 'USERINFO';
   public static readonly PageCode2FA = '2FA';
+  public static readonly PageCodeSendMessage = 'SENDMSG';
+  public static readonly PageCodeInbox = 'INBOX';
 
   public static readonly CurrentPageUserCard = 'CurrentPageUserCard';
   public static readonly CurrentPageUserList = 'CurrentPageUserList';
@@ -23,6 +25,9 @@ export class Const {
   public static readonly CurrentPage2FASetup = 'CurrentPage2FASetup';
   public static readonly CurrentPageAccessRight = 'CurrentPageAccessRight';
   public static readonly CurrentPageAccessRightSetup = 'CurrentPageAccessRightSetup';
+  public static readonly CurrentPageSendMessage = 'CurrentPageSendMessage';
+  public static readonly CurrentPageSendMessageHistory = 'CurrentPageSendMessageHistory';
+  public static readonly CurrentPageInbox = 'CurrentPageInbox';
   
   public static readonly PopupTypeConfirmation = 'cf';
   public static readonly PopupTypeAddInstruction = 'ai';

@@ -45,11 +45,21 @@ namespace Ng22.Backend
                 .AsNoTracking();
             return await Task.FromResult(query);
         }
+
+        public async Task<IQueryable<AppUserDm>> GetSubscriberUserList(Expression<Func<AppUserDm, bool>> predicate)
+        {
+            var query = ctx.AppSubscriberTbl
+                .Select(x => x.AppUser)
+                .Where(predicate)
+                .AsNoTracking();
+            return await Task.FromResult(query);
+        }
     }
 
     public interface IUserDbService
     {        
         Task<IQueryable<AppUserDm>> GetUserList(Expression<Func<AppUserDm, bool>> predicate);
+        Task<IQueryable<AppUserDm>> GetSubscriberUserList(Expression<Func<AppUserDm, bool>> predicate);
         Task<AppUserDm> GetUser(string userId);
         Task AddUser(AppUserDm dm);
         Task UpdateUser(AppUserDm dm);        

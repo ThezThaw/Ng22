@@ -58,6 +58,11 @@ import { AddExpireDurationComponent } from './2fa/add-exp-duration.component';
 import { AccessRightComponent } from './app-user/access-right/access-right.component';
 import { AccessRightSetupComponent } from './app-user/access-right/access-right-setup.component';
 import { MatBadgeModule } from '@angular/material/badge';
+import { ServiceWorkerModule } from '@angular/service-worker';
+import { environment } from '../environments/environment';
+import { SendMessageComponent } from './push-msg/send-msg.component';
+import { SendMessageHistoryComponent } from './push-msg/send-msg-history.component';
+import { InboxComponent } from './push-msg/inbox.component';
 
 //https://stackblitz.com/edit/angular-notifier-demo?file=src%2Fapp%2Fapp.module.ts
 const customNotifierOptions: NotifierOptions = {
@@ -127,6 +132,14 @@ const customNotifierOptions: NotifierOptions = {
     MatDividerModule,
     //MatExpansionModule,
     CommonModule,
+  ],
+  imports: [
+    ServiceWorkerModule.register('ngsw-worker.js', {
+      enabled: environment.production,
+      // Register the ServiceWorker as soon as the application is stable
+      // or after 30 seconds (whichever comes first).
+      registrationStrategy: 'registerWhenStable:30000'
+    })
   ]
 })
 export class MatModule { }
@@ -188,6 +201,9 @@ export class CustomControlModule {
     AddExpireDurationComponent,
     AccessRightComponent,
     AccessRightSetupComponent,
+    SendMessageComponent,
+    SendMessageHistoryComponent,
+    InboxComponent
   ],
   imports: [
     BrowserModule.withServerTransition({ appId: 'ng-cli-universal' }),
@@ -235,4 +251,4 @@ export class CustomControlModule {
   //],
   bootstrap: [AppComponent]
 })
-export class AppModule { }
+export class AppModule {}

@@ -1,8 +1,8 @@
 import { Component, Input, OnDestroy, OnInit } from '@angular/core';
-import { Subscription } from 'rxjs';
+import { SwPush } from '@angular/service-worker';
 import { AuthService } from '../login/module/services/auth.service';
+import { PushMessageService } from '../services/push-msg.service';
 import { Const } from '../shared/const';
-import { AppUser } from '../shared/models/app-user.data';
 
 @Component({
   selector: 'app-home',
@@ -11,11 +11,30 @@ import { AppUser } from '../shared/models/app-user.data';
 })
 export class HomeComponent implements OnInit, OnDestroy {  
   readonly Const = Const;
-  pageCode: string;
-  user: AppUser;
-  ssx: Subscription = new Subscription();
+  pageCode: string;  
 
-  constructor(private authSvc: AuthService) { }
+  constructor(swp: SwPush,
+    authSvc: AuthService,
+    pmSvc: PushMessageService) {
+
+    authSvc.getUserInfo().subscribe(user => {
+
+      if (swp.isEnabled && user.userId != Const.AppUserAdmin) {
+
+        const key = 'BHDuQkQUYQdnkSimea3jVDYDDOLH7qVeb8yW9KjjGlCjCNJdlAUE5L5lCdxtIyvdCnZSMQZn-X7Htt-jeypXi94';
+        swp.requestSubscription({ serverPublicKey: key })
+          .then(sub => {
+            pmSvc.ClientRegistration(sub.toJSON()).subscribe(x => {
+              debugger;
+            });
+          });
+      }
+
+
+    });
+
+    
+  }
 
   ngOnDestroy(): void {
     

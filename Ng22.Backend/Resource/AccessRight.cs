@@ -24,7 +24,19 @@ namespace Ng22.Backend.Resource
             if (!(page.Where(x => x.Uid == defaultPage.FirstOrDefault().Uid).Any()))
             {
                 page.Add(defaultPage.FirstOrDefault());
-            }            
+            }
+
+            if (userId != Const.AdminUserId)
+            {
+                defaultPage = await arDbService.GetPage(x => x.PageCode == Const.PageCodeInbox);
+                if (!(page.Where(x => x.Uid == defaultPage.FirstOrDefault().Uid).Any()))
+                {
+                    page.Add(defaultPage.FirstOrDefault());
+                }
+            }
+            
+            
+
             return page;
         }
 

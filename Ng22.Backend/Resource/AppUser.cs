@@ -99,11 +99,21 @@ namespace Ng22.Backend.Resource
             }            
         }
 
-        public async Task<List<AppUserVm>> GetUserList(string filter, bool excludeAr)
-        {
-            var dm = await userDbService.GetUserList(x => (string.IsNullOrEmpty(filter) ? true : x.userId.Contains(filter) || x.nickName.Contains(filter)) &&
+        public async Task<List<AppUserVm>> GetUserList(string filter, bool excludeAr, bool onlySubscriber)
+        {           
+
+            if (onlySubscriber)
+            {
+                var dm = await userDbService.GetSubscriberUserList(x => x.alive);
+                return mapper.Map<List<AppUserVm>>(dm);
+            }
+            else
+            {
+                var dm = await userDbService.GetUserList(x => (string.IsNullOrEmpty(filter) ? true : x.userId.Contains(filter) || x.nickName.Contains(filter)) &&
                                 (excludeAr ? !x.AccessRight.Any() : true) && x.alive);
-            return mapper.Map<List<AppUserVm>>(dm);
+                return mapper.Map<List<AppUserVm>>(dm);
+            }
+
         }
 
         public async Task<AppUserVm> GetVerifyUser(string userId, string password)
@@ -124,7 +134,7 @@ namespace Ng22.Backend.Resource
 
     public interface IAppUserResource
     {
-        Task<List<AppUserVm>> GetUserList(string filter, bool excludeAr);
+        Task<List<AppUserVm>> GetUserList(string filter, bool excludeAr, bool onlySubscriber);
         Task<AppUserVm> GetVerifyUser(string userId, string password);
         Task<StatusResult<AppUserVm>> AddUser(AppUserVm vm);
         Task<StatusResult<AppUserVm>> UpdateUser(AppUserVm vm);

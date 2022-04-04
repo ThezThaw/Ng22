@@ -17,10 +17,11 @@ export class AppUserService {
     this.url = `${this.appCfgSvc.cfg["baseUrl"]}api/appuser/`;
   }
 
-  getUserList(filter: string = '', excludeAr: boolean = false): Observable<AppUser[]> {
+  getUserList(filter: string = '', excludeAr: boolean = false, onlySubscriber: boolean = false): Observable<AppUser[]> {
     var params = new HttpParams()
       .set('filter', filter)
-      .set('excludeAr', excludeAr);
+      .set('excludeAr', excludeAr)
+      .set('onlySubscriber', onlySubscriber);
     return this.http.get<AppUser[]>(`${this.url}GetUserList/`,
       { params: params });
   }

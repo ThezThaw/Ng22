@@ -34,7 +34,10 @@ export class AppLayoutComponent implements OnInit, AfterViewChecked {
       this.btn = h?.btn;
       this.ref.detectChanges();
     });
-    this.busy = this.hdrSvc.busy;    
+
+    this.hdrSvc.isBusy$.subscribe(b => {
+      this.busy = b as boolean;
+    });
   }
 
   ngOnInit() {    

@@ -9,6 +9,7 @@ namespace Ng22.Helper
     public static class Const
     {
         public const string PageCodeUserInfo = "USERINFO";
+        public const string PageCodeInbox = "INBOX";
         public const string PageCodeAccessRight = "PAGESETUP";
         public const string AdminUserId = "admin";
     }

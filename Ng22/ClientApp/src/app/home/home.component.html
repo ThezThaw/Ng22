@@ -31,6 +31,14 @@
   <two-fa></two-fa>
 </div>
 
+<div *ngIf="pageCode == Const.PageCodeSendMessage">
+  <send-msg-history></send-msg-history>
+</div>
+
+<div *ngIf="pageCode == Const.PageCodeInbox">
+  <inbox></inbox>
+</div>
+
 <div *ngIf="pageCode === undefined"
      style="height:100%;"
      >
