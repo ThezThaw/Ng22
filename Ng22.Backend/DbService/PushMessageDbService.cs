@@ -15,8 +15,17 @@ namespace Ng22.Backend
 
         public async Task<bool> ClientRegistration(SubscriberInfoDm dm)
         {
-            ctx.AppSubscriberTbl.Add(dm);
-            return ((await ctx.SaveChangesAsync()) > 0);
+            var isExists = ctx.AppSubscriberTbl.Where(x => x.UserUid == dm.UserUid &&
+                                    x.endpoint == dm.endpoint &&
+                                    x.key == dm.key &&
+                                    x.auth == dm.auth).Any();
+
+            if (!isExists)
+            {
+                ctx.AppSubscriberTbl.Add(dm);
+                return ((await ctx.SaveChangesAsync()) > 0);
+            }
+            return true;
         }
 
         public async Task<IQueryable<SubscriberInfoDm>> GetSubscriber(Expression<Func<SubscriberInfoDm, bool>> predicate)
@@ -53,17 +62,17 @@ namespace Ng22.Backend
         public async Task<IQueryable<SentMessageDm>> GetSentMessage(Expression<Func<SentMessageDm, bool>> predicate)
         {
             var query = ctx.SentMessageTbl
-                .Include(x => x.SentTo).ThenInclude(x => x.AppUser)
+                .Include(x => x.SentTo).ThenInclude(x => x.Subscriber).ThenInclude(x => x.AppUser)
                 .Where(predicate)
                 .AsNoTracking();
             return await Task.FromResult(query);
         }
 
-        public async Task<IQueryable<SentMessageUserRelationDm>> GetSentMessageByUserId(Expression<Func<SentMessageUserRelationDm, bool>> predicate)
+        public async Task<IQueryable<SentMessageSubscriberRelationDm>> GetSentMessageByUserId(Expression<Func<SentMessageSubscriberRelationDm, bool>> predicate)
         {
-            var query = ctx.SentMessageUserRelationTbl                
+            var query = ctx.SentMessageSubscriberRelationTbl                
                 .Include(x => x.SentMessage)
-                .Include(x => x.AppUser)
+                .Include(x => x.Subscriber).ThenInclude(x => x.AppUser)
                 .Where(predicate)
                 .AsNoTracking();
             return await Task.FromResult(query);
@@ -77,6 +86,6 @@ namespace Ng22.Backend
         Task<bool> DeleteMessage(bool removeAll, SentMessageDm dm = null);
         Task<IQueryable<SubscriberInfoDm>> GetSubscriber(Expression<Func<SubscriberInfoDm, bool>> predicate);
         Task<IQueryable<SentMessageDm>> GetSentMessage(Expression<Func<SentMessageDm, bool>> predicate);
-        Task<IQueryable<SentMessageUserRelationDm>> GetSentMessageByUserId(Expression<Func<SentMessageUserRelationDm, bool>> predicate);
+        Task<IQueryable<SentMessageSubscriberRelationDm>> GetSentMessageByUserId(Expression<Func<SentMessageSubscriberRelationDm, bool>> predicate);
     }
 }

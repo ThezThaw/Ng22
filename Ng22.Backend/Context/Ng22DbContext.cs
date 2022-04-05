@@ -21,7 +21,7 @@ namespace Ng22.Backend
         public DbSet<TwoFADm> TwoFATbl { get; set; }
         public DbSet<SubscriberInfoDm> AppSubscriberTbl { get; set; }
         public DbSet<SentMessageDm> SentMessageTbl { get; set; }
-        public DbSet<SentMessageUserRelationDm> SentMessageUserRelationTbl { get; set; }
+        public DbSet<SentMessageSubscriberRelationDm> SentMessageSubscriberRelationTbl { get; set; }
 
     }
 }

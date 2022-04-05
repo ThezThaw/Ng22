@@ -26,6 +26,19 @@ namespace Ng22.Backend
         public AppUserDm AppUser { get; set; }
     }
 
+    public class SentMessageVm
+    {
+        public Guid Uid { get; set; }
+        public string message { get; set; }        
+        public DateTime senton { get; set; }
+        public List<SentTo> SentTo { get; set; }
+    }
+    public class SentTo
+    {
+        public AppUserDm AppUser { get; set; }
+        public string status { get; set; }
+    }
+
     [Table("sent_message")]
     public class SentMessageDm
     {
@@ -36,11 +49,11 @@ namespace Ng22.Backend
         public string message { get; set; }
         public string sentby { get; set; }
         public DateTime senton { get; set; }
-        public ICollection<SentMessageUserRelationDm> SentTo { get; set; }
+        public ICollection<SentMessageSubscriberRelationDm> SentTo { get; set; }
     }
 
-    [Table("rel_user_message")]
-    public class SentMessageUserRelationDm
+    [Table("rel_subscriber_message")]
+    public class SentMessageSubscriberRelationDm
     {
         [Key]
         [Column(TypeName = "varchar(36)")]
@@ -54,10 +67,13 @@ namespace Ng22.Backend
         public SentMessageDm SentMessage { get; set; }
 
         [Column(TypeName = "varchar(36)")]
-        public Guid UserUid { get; set; }
+        public Guid SubscriberUid { get; set; }
 
-        [ForeignKey("UserUid")]        
-        public AppUserDm AppUser { get; set; }
+        [ForeignKey("SubscriberUid")]
+        public SubscriberInfoDm Subscriber { get; set; }
+
+        [Column(TypeName = "char(7)")]
+        public string status { get; set; }
     }
 
     public class SendMessageVm

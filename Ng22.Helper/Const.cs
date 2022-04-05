@@ -12,5 +12,12 @@ namespace Ng22.Helper
         public const string PageCodeInbox = "INBOX";
         public const string PageCodeAccessRight = "PAGESETUP";
         public const string AdminUserId = "admin";
+
+        public static class SentStatus
+        {
+            public const string Success = "Success";
+            public const string Fail = "Fail";
+        }
+
     }
 }

@@ -50,7 +50,7 @@ namespace Ng22.Backend
         {
             var query = ctx.AppSubscriberTbl
                 .Select(x => x.AppUser)
-                .Where(predicate)
+                .Where(predicate)                
                 .AsNoTracking();
             return await Task.FromResult(query);
         }

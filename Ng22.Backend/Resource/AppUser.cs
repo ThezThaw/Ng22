@@ -104,8 +104,8 @@ namespace Ng22.Backend.Resource
 
             if (onlySubscriber)
             {
-                var dm = await userDbService.GetSubscriberUserList(x => x.alive);
-                return mapper.Map<List<AppUserVm>>(dm);
+                var dm = await userDbService.GetSubscriberUserList(x => x.alive);                
+                return mapper.Map<List<AppUserVm>>(dm.Distinct());
             }
             else
             {

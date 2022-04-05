@@ -49,18 +49,56 @@ namespace Ng22.Backend.Resource
             }
         }
 
-        public async Task<List<SentMessageDm>> GetSentMessage(string userId)
+        public async Task<List<SentMessageVm>> GetSentMessage(string userId)
         {
+            var lstSentMessage = new List<SentMessageVm>();
+            var lstRaw = await pushMsgDbService.GetSentMessageByUserId(x => x.Subscriber.AppUser.alive && (string.IsNullOrEmpty(userId) ? true : x.Subscriber.AppUser.userId == userId));
+
             if (string.IsNullOrEmpty(userId))
             {
-                var lst = await pushMsgDbService.GetSentMessage(x => true);
-                return await lst.OrderByDescending(x => x.senton).ToListAsync();
+                var lst = await lstRaw.ToListAsync();
+                var msgGroup = lst.GroupBy(x => new { x.SentMessage.Uid, x.SentMessage.message, x.SentMessage.senton }).ToList();
+                foreach (var mg in msgGroup)
+                {
+                    var sm = new SentMessageVm()
+                    {
+                        Uid = mg.Key.Uid,
+                        message = mg.Key.message,
+                        senton = mg.Key.senton,
+                        SentTo = new List<SentTo>()
+                    };
+                    var userGroup = mg.GroupBy(x => new { x.Subscriber.AppUser.userId, x.Subscriber.AppUser.nickName }).ToList();
+                    foreach (var ug in userGroup)
+                    {
+                        var status = ug.Any(x => x.status == Const.SentStatus.Success) ? Const.SentStatus.Success : Const.SentStatus.Fail;
+
+                        sm.SentTo.Add(new SentTo()
+                        {
+                            AppUser = new AppUserDm()
+                            {
+                                userId = ug.Key.userId,
+                                nickName = ug.Key.nickName
+                            },
+                            status = status
+                        });
+                    }
+                    lstSentMessage.Add(sm);
+                }
             }
             else
             {
-                var lst = await pushMsgDbService.GetSentMessageByUserId(x => x.AppUser.userId == userId);
-                return await lst.Select(x => x.SentMessage).OrderByDescending(x => x.senton).ToListAsync();
+                var lst = await lstRaw.Where(x => x.status == Const.SentStatus.Success).ToListAsync();
+                var msgGroup = lst.GroupBy(x => new { x.SentMessage.message, x.SentMessage.senton }).ToList();
+                foreach (var msg in msgGroup)
+                {
+                    lstSentMessage.Add(new SentMessageVm()
+                    { 
+                         message = msg.Key.message,
+                         senton = msg.Key.senton
+                    });
+                }
             }
+            return lstSentMessage.OrderByDescending(x => x.senton).ToList();
         }
 
         public async Task<StatusResult<bool>> DeleteMessage(Guid uid)
@@ -96,6 +134,17 @@ namespace Ng22.Backend.Resource
 
         public async Task<StatusResult<bool>> SendMessage(SendMessageVm sm, string sentBy)
         {
+            var guid = Guid.NewGuid();
+            var dm = new SentMessageDm()
+            {
+                Uid = guid,
+                message = sm.message,
+                sentby = sentBy,
+                senton = DateTime.UtcNow.NowByTimezone(Config.Timezone),
+                SentTo = new List<SentMessageSubscriberRelationDm>()
+            };
+
+
             var lst = await pushMsgDbService.GetSubscriber(x => sm.lstUserUid.Contains(x.AppUser.uid));
             foreach (var s in await lst.ToListAsync())
             {
@@ -112,30 +161,26 @@ namespace Ng22.Backend.Resource
                 payload.notification.title = "New Message from Ng22";
                 payload.notification.body = sm.message;
                 var pl = Newtonsoft.Json.JsonConvert.SerializeObject(payload);
-
+                var status = Const.SentStatus.Success;
                 var webPushClient = new WebPushClient();
-                await webPushClient.SendNotificationAsync(subscription, pl, vapidDetails);
-
-
-                var guid = Guid.NewGuid();
-                var dm = new SentMessageDm()
+                try
                 {
-                    Uid = guid,
-                    message = sm.message,
-                    sentby = sentBy,
-                    senton = DateTime.UtcNow.NowByTimezone(Config.Timezone),
-                    SentTo = new List<SentMessageUserRelationDm>()
-                    {
-                        new SentMessageUserRelationDm()
-                        {
-                             MessageUid = guid,
-                             UserUid = s.UserUid
-                        }
-                    }
-                };
-                await pushMsgDbService.SentMessage(dm);
+                    await webPushClient.SendNotificationAsync(subscription, pl, vapidDetails);
+                }
+                catch
+                {
+                    status = Const.SentStatus.Fail;
+                }
+
+                dm.SentTo.Add(new SentMessageSubscriberRelationDm()
+                {
+                    MessageUid = guid,
+                    SubscriberUid = s.Uid,
+                    status = status
+                });
             }
 
+            await pushMsgDbService.SentMessage(dm);
             return new StatusResult<bool> { status = true };
         }
     }
@@ -145,6 +190,6 @@ namespace Ng22.Backend.Resource
         Task<StatusResult<bool>> ClientRegistration(SubscriberInfoVm vm, string userId);
         Task<StatusResult<bool>> SendMessage(SendMessageVm sm, string sentBy);
         Task<StatusResult<bool>> DeleteMessage(Guid uid);
-        Task<List<SentMessageDm>> GetSentMessage(string userId);
+        Task<List<SentMessageVm>> GetSentMessage(string userId);
     }
 }

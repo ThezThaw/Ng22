@@ -7,19 +7,20 @@
   <ng-container *ngFor="let msg of lst;let idx = index;">
     <mat-card style="margin-bottom: -15px;">
       <mat-card-title>
-        <div style="display: flex; align-items: center;">
-          <mat-icon style="color: #5cb85c">message</mat-icon>&nbsp;
-          <span>{{msg.message}}</span>
+        <div style="display: flex; align-items: flex-start; justify-content: space-between;">
+          <div style="display: flex; align-items: center; width: 90%;">
+            <mat-icon style="color: #5cb85c">message</mat-icon>&nbsp;
+            <span>{{msg.message}}</span>
+          </div>          
+          <button mat-raised-button color="warn"
+                  (click)="delete_message(msg.uid)" [disabled]="busy">
+            <mat-icon style="margin: 0 -5px 0 -10px;">delete_forever</mat-icon>&nbsp;
+            Remove
+          </button>
         </div>
       </mat-card-title>
       <mat-card-subtitle> &bull; Sent {{msg.senton | fromNow}}</mat-card-subtitle>
-      <span>
-        <button mat-raised-button color="warn"
-                (click)="delete_message(msg.uid)" [disabled]="busy">
-          <mat-icon style="margin: 0 -5px 0 -10px;">delete_forever</mat-icon>&nbsp;
-          Remove
-        </button>
-      </span>      
+      
       <mat-card-content style="margin-top:10px;">
         <mat-card>
           <mat-card-header>
@@ -27,21 +28,29 @@
           </mat-card-header>
 
           <mat-chip-list>
-            <mat-chip *ngFor="let u of msg.sentTo">
+            <mat-chip *ngFor="let sentTo of msg.sentTo"
+                      [ngClass]="{'sent-msg-success': sentTo.status === 'Success', 'sent-msg-fail' : sentTo.status === 'Fail' }">
               <mat-icon>person</mat-icon>&nbsp;
-              {{u.appUser.userId}} <span *ngIf="u.appUser.nickName">&nbsp;&bull;&nbsp;{{u.appUser.nickName}}</span>
+              {{sentTo.appUser.userId}} <span *ngIf="sentTo.appUser.nickName">&nbsp;&bull;&nbsp;{{sentTo.appUser.nickName}}</span>                            
+              <span *ngIf="sentTo.status == 'Fail'">&nbsp;(Failed)</span>
             </mat-chip>
           </mat-chip-list>
-
         </mat-card>
-
-
-
-
-
       </mat-card-content>
     </mat-card>
     <br />
   </ng-container>
 
 </div>
+
+<style>
+  .mat-chip.sent-msg-success {
+    background-color:green;
+    color:white;
+  }
+
+  .mat-chip.sent-msg-fail {
+    background-color: #f44336;
+    color: white;
+  }
+</style>
