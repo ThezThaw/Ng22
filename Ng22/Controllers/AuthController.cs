@@ -78,7 +78,7 @@ namespace Ng22.Controllers
         {
             try
             {
-                var twoFA = await twoFAResource.Get2FA(loginRequestVm.password);
+                var twoFA = await twoFAResource.Get2FA(loginRequestVm.password, GetCurrentUserId());
                 var Valid2FA = twoFA.FirstOrDefault();
                 if (Valid2FA != null && Valid2FA.Expire >= DateTime.UtcNow.NowByTimezone(Config.Timezone))
                 {

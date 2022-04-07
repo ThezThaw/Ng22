@@ -2,6 +2,7 @@ export interface TwoFA {
   uid?: string;
   passcode: string;
   expireUid: string;
+  lstUserUid?: string[];
 }
 
 export interface ExpiryConfigVm {

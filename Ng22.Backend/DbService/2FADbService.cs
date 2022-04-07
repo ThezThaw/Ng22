@@ -39,8 +39,19 @@ namespace Ng22.Backend
         public async Task<IQueryable<TwoFADm>> Get2FA(Expression<Func<TwoFADm, bool>> predicate)
         {
             var query = ctx.TwoFATbl
+                .Include(x => x.GrantTo).ThenInclude(x => x.AppUserDm)
                 .Where(predicate)
                 .OrderByDescending(x => x.Expire)
+                .AsNoTracking();
+            return await Task.FromResult(query);
+        }
+
+        public async Task<IQueryable<User2FaRelationDm>> Get2FA(Expression<Func<User2FaRelationDm, bool>> predicate)
+        {
+            var query = ctx.TwoFAUserRelationTbl
+                .Include(x => x.TwoFADm)
+                .Include(x => x.AppUserDm)
+                .Where(predicate)
                 .AsNoTracking();
             return await Task.FromResult(query);
         }
@@ -50,7 +61,9 @@ namespace Ng22.Backend
             if (dm.Uid == Guid.Empty)//remove all expired record
             {
                 var exp = DateTime.UtcNow.NowByTimezone(Config.Timezone);
-                var all = await ctx.TwoFATbl.Where(x => x.Expire < exp).ToListAsync();
+                var all = await ctx.TwoFATbl
+                    .Include(x => x.GrantTo)
+                    .Where(x => x.Expire < exp).ToListAsync();
                 ctx.TwoFATbl.RemoveRange(all);
             }
             else
@@ -84,6 +97,7 @@ namespace Ng22.Backend
         Task<bool> AddUpdate2FA(TwoFADm dm);
         Task<bool> HardDelete2FA(TwoFADm dm);
         Task<IQueryable<TwoFADm>> Get2FA(Expression<Func<TwoFADm, bool>> predicate);
+        Task<IQueryable<User2FaRelationDm>> Get2FA(Expression<Func<User2FaRelationDm, bool>> predicate);
         Task<ExpiryConfigDm> AddExpiryConfig(ExpiryConfigDm dm);
         Task<bool> HardDeleteExpiryConfig(Guid uid);
     }

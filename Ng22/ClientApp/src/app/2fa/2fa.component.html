@@ -37,6 +37,22 @@
           </button>
         </span>
       </mat-card-title-group>
+
+      <mat-card-content style="margin-top:10px;">
+        <mat-card>
+          <mat-card-header>
+            <mat-card-title style="margin-left: -15px; margin-top: -10px;">Granted Access to</mat-card-title>
+          </mat-card-header>
+
+          <mat-chip-list>
+            <mat-chip *ngFor="let gt of fa.grantTo">
+              <mat-icon>person</mat-icon>&nbsp;
+              {{gt.appUserDm.userId}} <span *ngIf="gt.appUserDm.nickName">&nbsp;&bull;&nbsp;{{gt.appUserDm.nickName}}</span>
+            </mat-chip>
+          </mat-chip-list>
+        </mat-card>
+      </mat-card-content>
+
     </mat-card>
     <br />
   </ng-container>

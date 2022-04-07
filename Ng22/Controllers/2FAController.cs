@@ -30,9 +30,9 @@ namespace Ng22.Controllers
 
         [HttpPost("Add2FA")]
         [Authorize(AuthenticationSchemes = "L1")]
-        public async Task<IActionResult> Add2FA(TwoFADm dm)
+        public async Task<IActionResult> Add2FA(TwoFAVm vm)
         {
-            return Ok(await twoFAResource.Add2FA(dm));
+            return Ok(await twoFAResource.Add2FA(vm));
         }
 
         [HttpGet("Get2FA")]

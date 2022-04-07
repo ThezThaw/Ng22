@@ -14,6 +14,9 @@ namespace Ng22.Backend
                 .ForMember(vm => vm.missionDetails, opt => opt.Ignore())
                 .ForMember(vm => vm.DetailsCount, opt => opt.MapFrom(dm => dm.missionDetails.Count))
                 ;
+
+            CreateMap<TwoFAVm, TwoFADm>()
+                ;
         }
     }
 }

@@ -19,6 +19,7 @@ namespace Ng22.Backend
         public DbSet<MissionUserRelationDm> MissionUserRelationTbl { get; set; }
         public DbSet<ExpiryConfigDm> ExpiryConfigTbl { get; set; }
         public DbSet<TwoFADm> TwoFATbl { get; set; }
+        public DbSet<User2FaRelationDm> TwoFAUserRelationTbl { get; set; }
         public DbSet<SubscriberInfoDm> AppSubscriberTbl { get; set; }
         public DbSet<SentMessageDm> SentMessageTbl { get; set; }
         public DbSet<SentMessageSubscriberRelationDm> SentMessageSubscriberRelationTbl { get; set; }

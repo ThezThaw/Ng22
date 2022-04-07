@@ -19,42 +19,54 @@ namespace Ng22.Backend.Resource
             this.twoFaDbService = twoFaDbService;
         }
 
-        public async Task<StatusResult<bool>> Add2FA(TwoFADm dm)
+        public async Task<StatusResult<bool>> Add2FA(TwoFAVm vm)
         {
             try
             {
-                var existing = await twoFaDbService.Get2FA(x => x.Passcode.ToUpper() == dm.Passcode.ToUpper());
+                vm.Uid = Guid.NewGuid();
+                var existing = await twoFaDbService.Get2FA(x => x.Passcode.ToUpper() == vm.Passcode.ToUpper());
                 if (await existing.AnyAsync())
                 {
                     return new StatusResult<bool>()
                     {
                         status = false,
-                        message = new List<string>() { "Already Exists !" }
+                        message = new List<string>() { "Passcode Already Exists !" }
                     };
                 }
 
 
-                if (dm.ExpireUid == Guid.Parse(DefaultExpiryUid))
+                if (vm.ExpireUid == Guid.Parse(DefaultExpiryUid))
                 {
-                    dm.Expire = DateTime.UtcNow.NowByTimezone(Config.Timezone).AddMinutes(DefaultDuration);
+                    vm.Expire = DateTime.UtcNow.NowByTimezone(Config.Timezone).AddMinutes(DefaultDuration);
                 }
                 else
                 {
-                    var q = await twoFaDbService.Get2FAExpiry(x => x.Uid == dm.ExpireUid);
+                    var q = await twoFaDbService.Get2FAExpiry(x => x.Uid == vm.ExpireUid);
                     var e = await q.FirstOrDefaultAsync();
                     
                     if (e.Unit == "M")
                     {
-                        dm.Expire = DateTime.UtcNow.NowByTimezone(Config.Timezone).AddMinutes(e.Duration);
+                        vm.Expire = DateTime.UtcNow.NowByTimezone(Config.Timezone).AddMinutes(e.Duration);
                     }
                     else if (e.Unit == "H")
                     {
-                        dm.Expire = DateTime.UtcNow.NowByTimezone(Config.Timezone).AddHours(e.Duration);
+                        vm.Expire = DateTime.UtcNow.NowByTimezone(Config.Timezone).AddHours(e.Duration);
                     }
                     else if (e.Unit == "D")
                     {
-                        dm.Expire = DateTime.UtcNow.NowByTimezone(Config.Timezone).AddDays(e.Duration);
+                        vm.Expire = DateTime.UtcNow.NowByTimezone(Config.Timezone).AddDays(e.Duration);
                     }
+                }
+
+                var dm = mapper.Map<TwoFADm>(vm);
+                dm.GrantTo = new List<User2FaRelationDm>();
+                foreach (var uid in vm.lstUserUid)
+                {
+                    dm.GrantTo.Add(new User2FaRelationDm()
+                    { 
+                         UserUid = uid,
+                         TwoFaUid = vm.Uid
+                    });
                 }
                 var result = await twoFaDbService.AddUpdate2FA(dm);
                 return new StatusResult<bool>()
@@ -72,11 +84,20 @@ namespace Ng22.Backend.Resource
                 };
             }
         }
-        public async Task<ICollection<TwoFADm>> Get2FA(string passcode = null)
+        public async Task<ICollection<TwoFADm>> Get2FA(string passcode = null, string userId = "")
         {
             var exp = DateTime.UtcNow.NowByTimezone(Config.Timezone);
-            var lst = await twoFaDbService.Get2FA(x => string.IsNullOrEmpty(passcode) ? true : (x.Passcode == passcode && x.Expire >= exp));
-            return await lst.ToListAsync();
+            if (string.IsNullOrEmpty(passcode))
+            {
+                var lst = await twoFaDbService.Get2FA(x => x.Passcode != string.Empty);//get all
+                return await lst.ToListAsync();
+            }
+            else
+            {
+                var lst = await twoFaDbService.Get2FA(x => x.TwoFADm.Passcode == passcode && x.TwoFADm.Expire >= exp && x.AppUserDm.userId == userId);
+                return await lst.Select(x => x.TwoFADm).ToListAsync();
+            }
+            
         }
 
         public async Task<List<ExpiryConfigDm>> Get2FAExpiry()
@@ -169,9 +190,9 @@ namespace Ng22.Backend.Resource
     public interface ITwoFAResource
     {
         Task<List<ExpiryConfigDm>> Get2FAExpiry();
-        Task<StatusResult<bool>> Add2FA(TwoFADm dm);
+        Task<StatusResult<bool>> Add2FA(TwoFAVm vm);
         Task<StatusResult<bool>> Remove2FA(TwoFADm dm);
-        Task<ICollection<TwoFADm>> Get2FA(string passcode = null);
+        Task<ICollection<TwoFADm>> Get2FA(string passcode = null, string userId = "");
         Task<StatusResult<ExpiryConfigDm>> AddExpiryConfig(ExpiryConfigDm dm);
         Task<StatusResult<bool>> RemoveExpiryConfig(Guid uid);
     }

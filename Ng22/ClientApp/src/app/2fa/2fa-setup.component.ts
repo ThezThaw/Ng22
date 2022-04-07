@@ -9,6 +9,10 @@ import { Header, HeaderButton } from '../shared/models/shared-data.model';
 import { Subscription } from 'rxjs';
 import { TwoFAService } from '../services/2fa.service';
 import { TwoFA } from '../shared/models/2fa.data';
+import { MatTableDataSource } from '@angular/material/table';
+import { AppUser } from '../shared/models/app-user.data';
+import { SelectionModel } from '@angular/cdk/collections';
+import { AppUserService } from '../services/app-user.service';
 
 @Component({
   selector: 'two-fa-setup',
@@ -34,6 +38,10 @@ export class TwoFASetupComponent implements OnInit, OnDestroy {
   busy: boolean = false;
   ssx: Subscription = new Subscription();
 
+  dsUser = new MatTableDataSource<AppUser>();
+  userSelection = new SelectionModel<string>(true, []);
+  userDisplayedColumns: string[] = ['select', 'user'];
+
   constructor(
     private fb: FormBuilder,
     private ref: ChangeDetectorRef,
@@ -41,6 +49,7 @@ export class TwoFASetupComponent implements OnInit, OnDestroy {
     private bs: BottomSheetComponent,
     private popup: PopupComponent,
     private hdrSvc: HeaderService,
+    private userSvc: AppUserService,
     private cms: CommonMethodService,
     public twoFASvc: TwoFAService) {
     var ssx = this.hdrSvc.clickEvent$.subscribe(btn => {
@@ -59,11 +68,21 @@ export class TwoFASetupComponent implements OnInit, OnDestroy {
       expiry: [],
     });
 
+    var ssx = this.userSvc.getUserList().subscribe(u => {
+      this.dsUser.data = u;
+    });
+    this.ssx.add(ssx);
+
     this.refreshExpiryList();
 
     this.touch();
     this.cms.focus(this.focusElementId);
     this.setHeader();
+  }
+
+  applyFilter(event: Event) {
+    const filterValue = (event.target as HTMLInputElement).value;
+    this.dsUser.filter = filterValue.trim().toLowerCase();
   }
 
   refreshExpiryList() {
@@ -76,9 +95,16 @@ export class TwoFASetupComponent implements OnInit, OnDestroy {
 
   save() {
     if (this.fg.invalid) return;
+
+    if (this.userSelection.selected.length == 0) {
+      this.bs.open("Select user!");
+      return;
+    }
+
     let data = this.fg.getRawValue() as TwoFA;
     data.uid = Const.EmptyGuid;
     data.expireUid = this.selected['id'];
+    data.lstUserUid = this.userSelection.selected;
     this.setBusy(true);
 
     this.twoFASvc.Add2FA(data).subscribe(result => {
@@ -201,5 +227,20 @@ export class TwoFASetupComponent implements OnInit, OnDestroy {
       ownby: Const.CurrentPage2FASetup
     });
     this.hdrSvc.setHeader(h);
+  }
+
+  isAllSelected() {
+    const numSelected = this.userSelection.selected.length;
+    const numRows = this.dsUser.data.length;
+    return numSelected === numRows;
+  }
+
+  /** Selects all rows if they are not all selected; otherwise clear selection. */
+  masterToggle() {
+    if (this.isAllSelected()) {
+      this.userSelection.clear();
+      return;
+    }
+    this.userSelection.select(...this.dsUser.data.map(x => { return x.uid }));
   }
 }
