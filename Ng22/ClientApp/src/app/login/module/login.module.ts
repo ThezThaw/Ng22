@@ -8,7 +8,11 @@ import { UnauthorizedInterceptor } from './interceptors/unauthorized.interceptor
   declarations: [],
   imports: [CommonModule],
   providers: [
-    { provide: HTTP_INTERCEPTORS, useClass: JwtInterceptor, multi: true },
+    {
+      provide: HTTP_INTERCEPTORS,
+      useClass: JwtInterceptor,
+      multi: true
+    },
     {
       provide: HTTP_INTERCEPTORS,
       useClass: UnauthorizedInterceptor,

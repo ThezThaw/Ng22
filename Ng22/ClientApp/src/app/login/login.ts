@@ -42,7 +42,13 @@ export class LoginComponent implements OnInit, OnDestroy {
         () => {
           this.router.navigate(['']);
         },
-        () => {
+        (err) => {
+
+          if (err.error == 401) {//invalid user/password
+
+          } else if (err.error == 403) {//blocked ip
+
+          }        
           this.loginError = true;
         }
       );

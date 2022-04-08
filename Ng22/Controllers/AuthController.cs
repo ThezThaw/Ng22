@@ -8,6 +8,7 @@ using System;
 using System.Collections.Generic;
 using System.IdentityModel.Tokens.Jwt;
 using System.Linq;
+using System.Net;
 using System.Security.Claims;
 using System.Text;
 using System.Threading.Tasks;
@@ -21,20 +22,33 @@ namespace Ng22.Controllers
         private readonly IMissionResource missionResource;
         private readonly IAppUserResource appUserResource;
         private readonly ITwoFAResource twoFAResource;
-        private readonly ITwoFADbService twoFADbService;
-        public AuthController(IMissionResource missionResource, IAppUserResource appUserResource, ITwoFAResource twoFAResource, ITwoFADbService twoFADbService)
+        private readonly IIPFilterResource ipFilterResource;
+        private readonly ITwoFADbService twoFADbService;        
+        public AuthController(IMissionResource missionResource, 
+            IAppUserResource appUserResource, 
+            ITwoFAResource twoFAResource, 
+            IIPFilterResource ipFilterResource,
+            ITwoFADbService twoFADbService)
         {
             this.missionResource = missionResource;
             this.appUserResource = appUserResource;
             this.twoFAResource = twoFAResource;
+            this.ipFilterResource = ipFilterResource;
             this.twoFADbService = twoFADbService;
         }
 
+        //[Authorize(Policy = "IPFilter")]
         [HttpPost("token-l1")]
         public async Task<IActionResult> GetL1Token([FromBody]LoginRequestVm loginRequestVm)
         {
             try
             {
+                var allowed = await ipFilterResource.IsValid(HttpContext.Connection.RemoteIpAddress.ToString());
+                if (!allowed)
+                {
+                    return Unauthorized(HttpStatusCode.Forbidden);
+                }
+
                 var VerifiedUser = await appUserResource.GetVerifyUser(loginRequestVm.userId, loginRequestVm.password);
                 if (VerifiedUser != null)
                 {
@@ -63,7 +77,7 @@ namespace Ng22.Controllers
                 }
                 else
                 {
-                    return Unauthorized();
+                    return Unauthorized(HttpStatusCode.Unauthorized);
                 }
             }
             catch (Exception ex)

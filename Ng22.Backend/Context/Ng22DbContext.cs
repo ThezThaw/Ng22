@@ -23,6 +23,6 @@ namespace Ng22.Backend
         public DbSet<SubscriberInfoDm> AppSubscriberTbl { get; set; }
         public DbSet<SentMessageDm> SentMessageTbl { get; set; }
         public DbSet<SentMessageSubscriberRelationDm> SentMessageSubscriberRelationTbl { get; set; }
-
+        public DbSet<IpBlackListDm> IpBlackListTbl { get; set; }
     }
 }
