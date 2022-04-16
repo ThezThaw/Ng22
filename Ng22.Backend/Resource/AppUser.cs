@@ -99,12 +99,12 @@ namespace Ng22.Backend.Resource
             }            
         }
 
-        public async Task<List<AppUserVm>> GetUserList(string filter, bool excludeAr, bool onlySubscriber)
+        public async Task<List<AppUserVm>> GetUserList(string filter, bool excludeAr, bool onlySubscriber, string currentUserId)
         {           
 
             if (onlySubscriber)
             {
-                var dm = await userDbService.GetSubscriberUserList(x => x.alive);                
+                var dm = await userDbService.GetSubscriberUserList(x => x.alive && x.userId != currentUserId);                
                 return mapper.Map<List<AppUserVm>>(dm.Distinct());
             }
             else
@@ -134,7 +134,7 @@ namespace Ng22.Backend.Resource
 
     public interface IAppUserResource
     {
-        Task<List<AppUserVm>> GetUserList(string filter, bool excludeAr, bool onlySubscriber);
+        Task<List<AppUserVm>> GetUserList(string filter, bool excludeAr, bool onlySubscriber, string currentUserId);
         Task<AppUserVm> GetVerifyUser(string userId, string password);
         Task<StatusResult<AppUserVm>> AddUser(AppUserVm vm);
         Task<StatusResult<AppUserVm>> UpdateUser(AppUserVm vm);

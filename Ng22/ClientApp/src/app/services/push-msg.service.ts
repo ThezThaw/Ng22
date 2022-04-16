@@ -20,12 +20,11 @@ export class PushMessageService {
     return this.http.post<any>(`${this.appCfgSvc.cfg["baseUrl"]}api/PushMessage/SendMessage`, msg);
   }
 
-  GetSentMessage(all: boolean): Observable<any> {
-    return this.http.post<any>(`${this.appCfgSvc.cfg["baseUrl"]}api/PushMessage/GetSentMessage/${all}`, undefined);
+  GetSentMessage(isInbox: boolean): Observable<any> {
+    return this.http.post<any>(`${this.appCfgSvc.cfg["baseUrl"]}api/PushMessage/GetSentMessage/${isInbox}`, undefined);
   }
 
-  DeleteMessage(uid: string): Observable<any> {
-    return this.http.post<any>(`${this.appCfgSvc.cfg["baseUrl"]}api/PushMessage/DeleteMessage/${uid}`, undefined);
+  DeleteMessage(uids: string[], isInbox: boolean, softdelete: boolean): Observable<any> {
+    return this.http.post<any>(`${this.appCfgSvc.cfg["baseUrl"]}api/PushMessage/DeleteMessage/${softdelete}/${isInbox}`, uids);
   }
-
 }

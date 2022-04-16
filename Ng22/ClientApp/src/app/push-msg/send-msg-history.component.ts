@@ -1,13 +1,14 @@
+import { SelectionModel } from '@angular/cdk/collections';
 import { ChangeDetectorRef, Component, Input, OnDestroy, OnInit, ViewChild } from '@angular/core';
 import { FormBuilder, FormGroup } from '@angular/forms';
 import { NotifierService } from 'angular-notifier';
 import { Subscription } from 'rxjs';
-import { MissionService } from '../services/mission.service';
+import { AuthService } from '../login/module/services/auth.service';
 import { PushMessageService } from '../services/push-msg.service';
 import { Const } from '../shared/const';
 import { BottomSheetComponent } from '../shared/controls/bottom-sheet.component';
 import { PopupComponent } from '../shared/controls/popup.component';
-import { Mission } from '../shared/mission.data';
+import { AppUser } from '../shared/models/app-user.data';
 import { MissionUserRelation } from '../shared/models/mission.data';
 import { Header, HeaderButton } from '../shared/models/shared-data.model';
 import { CommonMethodService, HeaderService } from '../shared/service';
@@ -17,17 +18,21 @@ import { CommonMethodService, HeaderService } from '../shared/service';
   templateUrl: './send-msg-history.component.html',
 })
 export class SendMessageHistoryComponent implements OnInit, OnDestroy {
-
+  @Input() isInbox: boolean;
   btn: any[] = [{ 'icon': 'add' }];
   fg: FormGroup;
   get c() { return this.fg.controls; }
   focusElementId = '#title';
   ssx: Subscription = new Subscription();
   busy: boolean = false;
+  isDelete: boolean = false;
+  removeOrDelete: string = '';
 
-  lst: Mission[] = [];
+  lst: any[] = [];
   addNew: boolean = false;
   selected: MissionUserRelation;
+  currentUser: AppUser;
+  selection = new SelectionModel<string>(true, []);
 
   constructor(
     private ref: ChangeDetectorRef,
@@ -35,6 +40,7 @@ export class SendMessageHistoryComponent implements OnInit, OnDestroy {
     private bs: BottomSheetComponent,
     private popup: PopupComponent,
     private hdrSvc: HeaderService,
+    private authService: AuthService,
     private pmSvc: PushMessageService) {
 
     var ssx = this.hdrSvc.clickEvent$.subscribe(btn => {
@@ -48,6 +54,7 @@ export class SendMessageHistoryComponent implements OnInit, OnDestroy {
   }
 
   ngOnInit(): void {
+    this.authService.getUserInfo().subscribe(x => this.currentUser = x)
     this.getList();    
   }
 
@@ -55,17 +62,17 @@ export class SendMessageHistoryComponent implements OnInit, OnDestroy {
     this.addNew = true;
   }
 
-  delete_message(uid: string) {
-    var confirm = this.popup.show(Const.PopupTypeConfirmation, true, '25%', 'Confirm remove ?');
+  remove_message(uids: string[]) {
+    var confirm = this.popup.show(Const.PopupTypeConfirmation, true, '25%', `Confirm ${this.removeOrDelete} ?`);
     confirm.afterClosed().subscribe(yes => {
       if (!yes) return;
 
       this.setBusy(true);
-      this.pmSvc.DeleteMessage(uid).subscribe(x => {
+      this.pmSvc.DeleteMessage(uids, this.isInbox, !this.isDelete).subscribe(x => {
 
         if (x.status === true) {
-
-          this.notiSvc.notify('error', 'DELETED');
+          this.selection.clear();
+          this.notiSvc.notify('error', this.isDelete ? 'DELETED' : 'REMOVED');
           this.getList();
 
         } else {
@@ -80,8 +87,13 @@ export class SendMessageHistoryComponent implements OnInit, OnDestroy {
     });
   }
 
-  clear_all_message() {
-    this.delete_message(Const.EmptyGuid);
+  remove_selected_message() {
+    if (this.selection.selected.length == 0) {
+      this.bs.open(`Select message to ${this.removeOrDelete}!`);
+      return;
+    }
+
+    this.remove_message(this.selection.selected);
   }
 
   setBusy(busy) {
@@ -90,7 +102,7 @@ export class SendMessageHistoryComponent implements OnInit, OnDestroy {
   }
 
   getList() {
-    var ssx = this.pmSvc.GetSentMessage(true).subscribe(x => {      
+    var ssx = this.pmSvc.GetSentMessage(this.isInbox).subscribe(x => {
       this.lst = x;
       this.setHeader();
     });
@@ -105,31 +117,58 @@ export class SendMessageHistoryComponent implements OnInit, OnDestroy {
   }
 
   setHeader() {
+    this.isDelete = this.currentUser.userId == Const.AppUserAdmin && !this.isInbox;
+    this.removeOrDelete = this.isDelete ? 'delete' : 'remove';
     let h: Header = {
-      btn: [{
+      btn: []
+    };
+
+    if (!this.isInbox) {
+      h.btn.push({
         name: 'New Message',
         icon: 'add',
         func: 'new_message',
         ownby: Const.CurrentPageSendMessageHistory
-      }]
-    };
+      });
+    }
 
     if (this.lst?.length > 0) {
+
       h.btn.push({
-        name: 'Remove All Messages',
-        icon: 'delete_forever',
-        color: 'warn',
-        func: 'clear_all_message',
+        name: 'Remove Selected Messages',
+        icon: 'delete',
+        color: 'basic',
+        func: 'remove_selected_message',
         ownby: Const.CurrentPageSendMessageHistory
       });
+
+      if (this.isDelete) {
+        h.btn.pop();
+        h.btn.push({
+          name: 'Delete Selected Messages',
+          icon: 'delete_forever',
+          color: 'warn',
+          func: 'remove_selected_message',
+          ownby: Const.CurrentPageSendMessageHistory
+        });
+      }
     }
 
     this.hdrSvc.setHeader(h);
   }
 
-  edit(val) {
-    this.selected = val;
-    this.ref.detectChanges();
-    this.addNew = true;
+  isAllSelected() {
+    const numSelected = this.selection.selected.length;
+    const numRows = this.lst.length;
+    return numSelected === numRows;
+  }
+
+  /** Selects all rows if they are not all selected; otherwise clear selection. */
+  masterToggle() {
+    if (this.isAllSelected()) {
+      this.selection.clear();
+      return;
+    }
+    this.selection.select(...this.lst.map(x => { return x.uid }));
   }
 }

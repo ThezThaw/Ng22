@@ -43,19 +43,13 @@ namespace Ng22.Backend
             return ((await ctx.SaveChangesAsync()) > 0);
         }
 
-        public async Task<bool> DeleteMessage(bool removeAll, SentMessageDm dm = null)
+        public async Task<bool> DeleteMessage(List<Guid> msgUids)
         {
-            if (removeAll)
-            {
-                var lst = ctx.SentMessageTbl
-                    .Include(x => x.SentTo)
-                    .Where(x => true);
-                ctx.SentMessageTbl.RemoveRange(lst.ToList());
-            }
-            else
-            {
-                ctx.SentMessageTbl.Remove(dm);
-            }
+            var msgs = await ctx.SentMessageTbl
+                            .Where(x => msgUids.Contains(x.Uid))
+                            .Include(x => x.SentTo)
+                            .ToListAsync();
+            ctx.SentMessageTbl.RemoveRange(msgs);
             return ((await ctx.SaveChangesAsync()) > 0);
         }
 
@@ -77,13 +71,41 @@ namespace Ng22.Backend
                 .AsNoTracking();
             return await Task.FromResult(query);
         }
+
+        public async Task<bool> SoftDeleteSubscriber(List<Guid> msgUids, string userId)
+        {
+            var existing = await ctx.SentMessageSubscriberRelationTbl                            
+                            .Where(x => msgUids.Contains(x.MessageUid) && x.Subscriber.AppUser.userId == userId)
+                            .ToListAsync();
+            existing.ForEach(x => {
+                x.softdeleted = true;
+                x.deletedby = userId;
+                x.deletedon = DateTime.UtcNow.NowByTimezone(Config.Timezone);
+            });
+            return ((await ctx.SaveChangesAsync()) > 0);
+        }
+
+        public async Task<bool> SoftDeleteMessage(List<Guid> msgUids, string userId)
+        {
+            var existing = await ctx.SentMessageTbl
+                            .Where(x => msgUids.Contains(x.Uid))
+                            .ToListAsync();
+            existing.ForEach(x => {
+                x.softdeleted = true;
+                x.deletedby = userId;
+                x.deletedon = DateTime.UtcNow.NowByTimezone(Config.Timezone);
+            });
+            return ((await ctx.SaveChangesAsync()) > 0);
+        }
     }
 
     public interface IPushMessageDbService
     {
         Task<bool> ClientRegistration(SubscriberInfoDm dm);
         Task<bool> SentMessage(SentMessageDm dm);
-        Task<bool> DeleteMessage(bool removeAll, SentMessageDm dm = null);
+        Task<bool> DeleteMessage(List<Guid> msgUids);
+        Task<bool> SoftDeleteSubscriber(List<Guid> msgUids, string userId);
+        Task<bool> SoftDeleteMessage(List<Guid> msgUids, string userId);
         Task<IQueryable<SubscriberInfoDm>> GetSubscriber(Expression<Func<SubscriberInfoDm, bool>> predicate);
         Task<IQueryable<SentMessageDm>> GetSentMessage(Expression<Func<SentMessageDm, bool>> predicate);
         Task<IQueryable<SentMessageSubscriberRelationDm>> GetSentMessageByUserId(Expression<Func<SentMessageSubscriberRelationDm, bool>> predicate);

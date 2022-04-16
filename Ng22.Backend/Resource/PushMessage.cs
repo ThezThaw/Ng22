@@ -49,15 +49,40 @@ namespace Ng22.Backend.Resource
             }
         }
 
-        public async Task<List<SentMessageVm>> GetSentMessage(string userId)
+        public async Task<List<SentMessageVm>> GetSentMessage(bool isInbox, string userId)
         {
             var lstSentMessage = new List<SentMessageVm>();
-            var lstRaw = await pushMsgDbService.GetSentMessageByUserId(x => x.Subscriber.AppUser.alive && (string.IsNullOrEmpty(userId) ? true : x.Subscriber.AppUser.userId == userId));
+            var lstRaw = await pushMsgDbService.GetSentMessageByUserId(x => x.Subscriber.AppUser.alive && (isInbox ? x.Subscriber.AppUser.userId == userId : (userId == Const.AdminUserId ? true : x.SentMessage.sentby == userId)));
 
-            if (string.IsNullOrEmpty(userId))
+            if (isInbox)
+            {
+                var lst = await lstRaw.Where(x => x.status == Const.SentStatus.Success && !x.softdeleted).ToListAsync();
+                var msgGroup = lst.Where(x => x.Subscriber.AppUser.userId == userId && !x.SentMessage.softdeleted).GroupBy(x => new { x.SentMessage.message, x.SentMessage.senton, x.SentMessage.sentby, x.SentMessage.Uid }).ToList();
+                foreach (var msg in msgGroup)
+                {     
+                    lstSentMessage.Add(new SentMessageVm()
+                    {
+                        message = msg.Key.message,
+                        senton = msg.Key.senton,
+                        sentby = msg.Key.sentby,
+                        Uid = msg.Key.Uid
+                    });
+                }
+            }
+            else
             {
                 var lst = await lstRaw.ToListAsync();
-                var msgGroup = lst.GroupBy(x => new { x.SentMessage.Uid, x.SentMessage.message, x.SentMessage.senton }).ToList();
+                var msgGroup = lst.GroupBy(x => new 
+                { 
+                    x.SentMessage.Uid, 
+                    x.SentMessage.message, 
+                    x.SentMessage.senton, 
+                    x.SentMessage.sentby,
+                    x.SentMessage.softdeleted,
+                    x.SentMessage.deletedby,
+                    x.SentMessage.deletedon
+                }).ToList();
+
                 foreach (var mg in msgGroup)
                 {
                     var sm = new SentMessageVm()
@@ -65,6 +90,10 @@ namespace Ng22.Backend.Resource
                         Uid = mg.Key.Uid,
                         message = mg.Key.message,
                         senton = mg.Key.senton,
+                        sentby = mg.Key.sentby,
+                        softdeleted = mg.Key.softdeleted,
+                        deletedby = mg.Key.deletedby,
+                        deletedon = mg.Key.deletedon,
                         SentTo = new List<SentTo>()
                     };
                     var userGroup = mg.GroupBy(x => new { x.Subscriber.AppUser.userId, x.Subscriber.AppUser.nickName }).ToList();
@@ -79,41 +108,58 @@ namespace Ng22.Backend.Resource
                                 userId = ug.Key.userId,
                                 nickName = ug.Key.nickName
                             },
-                            status = status
+                            status = status,
+                            //softdeleted = ug.Where(u => u.Subscriber.AppUser.userId == ug.Key.userId).Any(x => x.softdeleted)
+                            softdeleted = ug.Any(x => x.softdeleted),
+                            deletedon = ug.FirstOrDefault()?.deletedon
                         });
                     }
-                    lstSentMessage.Add(sm);
-                }
-            }
-            else
-            {
-                var lst = await lstRaw.Where(x => x.status == Const.SentStatus.Success).ToListAsync();
-                var msgGroup = lst.GroupBy(x => new { x.SentMessage.message, x.SentMessage.senton }).ToList();
-                foreach (var msg in msgGroup)
-                {
-                    lstSentMessage.Add(new SentMessageVm()
-                    { 
-                         message = msg.Key.message,
-                         senton = msg.Key.senton
-                    });
+
+                    if (userId == Const.AdminUserId)
+                    {
+                        lstSentMessage.Add(sm);
+                    }
+                    else
+                    {
+                        if (sm.softdeleted == false && sm.SentTo.Any(x => x.softdeleted == false))
+                        {
+                            lstSentMessage.Add(sm);
+                        }
+                    }
+                    
                 }
             }
             return lstSentMessage.OrderByDescending(x => x.senton).ToList();
         }
 
-        public async Task<StatusResult<bool>> DeleteMessage(Guid uid)
+        public async Task<StatusResult<bool>> DeleteMessage(List<Guid> msgUids, bool isInbox, bool softdelete, string userId)
         {
+            var result = false;
             try
             {
-                var result = false;
-                if (uid == Guid.Empty)
+                if (isInbox)
                 {
-                    result = await pushMsgDbService.DeleteMessage(true);
+                    result = await pushMsgDbService.SoftDeleteSubscriber(msgUids, userId);
+
+                    var uids = new List<Guid>();
+                    var lst = await pushMsgDbService.GetSentMessage(x => msgUids.Contains(x.Uid));
+                    foreach (var msg in lst)
+                    {
+                        if (msg.SentTo.Any(x => !x.softdeleted)) continue;
+                        uids.Add(msg.Uid);
+                    }
+                    await pushMsgDbService.SoftDeleteMessage(uids, null);
                 }
                 else
-                {                    
-                    var dm = await pushMsgDbService.GetSentMessage(x => x.Uid == uid);
-                    result = await pushMsgDbService.DeleteMessage(false, await dm.FirstOrDefaultAsync());
+                {
+                    if (softdelete)
+                    {
+                        result = await pushMsgDbService.SoftDeleteMessage(msgUids, userId);
+                    }
+                    else
+                    {
+                        result = await pushMsgDbService.DeleteMessage(msgUids);
+                    }
                 }
 
                 return new StatusResult<bool>()
@@ -189,7 +235,7 @@ namespace Ng22.Backend.Resource
     {
         Task<StatusResult<bool>> ClientRegistration(SubscriberInfoVm vm, string userId);
         Task<StatusResult<bool>> SendMessage(SendMessageVm sm, string sentBy);
-        Task<StatusResult<bool>> DeleteMessage(Guid uid);
-        Task<List<SentMessageVm>> GetSentMessage(string userId);
+        Task<StatusResult<bool>> DeleteMessage(List<Guid> msgUids, bool isInbox, bool softdelete, string userId);
+        Task<List<SentMessageVm>> GetSentMessage(bool isInbox, string userId);
     }
 }

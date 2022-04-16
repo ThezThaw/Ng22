@@ -62,7 +62,6 @@ import { ServiceWorkerModule } from '@angular/service-worker';
 import { environment } from '../environments/environment';
 import { SendMessageComponent } from './push-msg/send-msg.component';
 import { SendMessageHistoryComponent } from './push-msg/send-msg-history.component';
-import { InboxComponent } from './push-msg/inbox.component';
 
 //https://stackblitz.com/edit/angular-notifier-demo?file=src%2Fapp%2Fapp.module.ts
 const customNotifierOptions: NotifierOptions = {
@@ -203,7 +202,6 @@ export class CustomControlModule {
     AccessRightSetupComponent,
     SendMessageComponent,
     SendMessageHistoryComponent,
-    InboxComponent
   ],
   imports: [
     BrowserModule.withServerTransition({ appId: 'ng-cli-universal' }),

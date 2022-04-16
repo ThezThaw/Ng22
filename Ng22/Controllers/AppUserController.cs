@@ -50,7 +50,7 @@ namespace Ng22.Controllers
         [Authorize(AuthenticationSchemes = "L1")]
         public async Task<IActionResult> GetUserList(string filter, bool excludeAr, bool onlySubscriber)
         {
-            return Ok(await appUserResource.GetUserList(filter, excludeAr, onlySubscriber));
+            return Ok(await appUserResource.GetUserList(filter, excludeAr, onlySubscriber, GetCurrentUserId()));
         }
 
         [HttpPost("AddUser")]

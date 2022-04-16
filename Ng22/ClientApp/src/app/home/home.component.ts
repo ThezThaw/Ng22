@@ -19,7 +19,7 @@ export class HomeComponent implements OnInit, OnDestroy {
 
     authSvc.getUserInfo().subscribe(user => {
 
-      if (swp.isEnabled && user.userId != Const.AppUserAdmin) {
+      if (swp.isEnabled) {
 
         const key = 'BHDuQkQUYQdnkSimea3jVDYDDOLH7qVeb8yW9KjjGlCjCNJdlAUE5L5lCdxtIyvdCnZSMQZn-X7Htt-jeypXi94';
         swp.requestSubscription({ serverPublicKey: key })

@@ -32,11 +32,11 @@
 </div>
 
 <div *ngIf="pageCode == Const.PageCodeSendMessage">
-  <send-msg-history></send-msg-history>
+  <send-msg-history [isInbox]="false"></send-msg-history>
 </div>
 
 <div *ngIf="pageCode == Const.PageCodeInbox">
-  <inbox></inbox>
+  <send-msg-history [isInbox]="true"></send-msg-history>
 </div>
 
 <div *ngIf="pageCode === undefined"

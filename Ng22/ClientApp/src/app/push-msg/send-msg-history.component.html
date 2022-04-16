@@ -4,34 +4,65 @@
 
 <div *ngIf="!addNew">
 
+  <mat-checkbox *ngIf="lst.length"
+                (change)="$event ? masterToggle() : null"
+                color="primary"
+                [disabled]="busy"
+                [checked]="selection.hasValue() && isAllSelected()"
+                [indeterminate]="selection.hasValue() && !isAllSelected()">
+  </mat-checkbox>
+
   <ng-container *ngFor="let msg of lst;let idx = index;">
-    <mat-card style="margin-bottom: -15px;">
+    <mat-card style="margin-bottom: -15px;cursor:pointer;"
+              [ngClass]="{'selected': selection.isSelected(msg.uid)}"
+              (click)="$event ? selection.toggle(msg.uid) : null">
       <mat-card-title>
         <div style="display: flex; align-items: flex-start; justify-content: space-between;">
-          <div style="display: flex; align-items: center; width: 90%;">
-            <mat-icon style="color: #5cb85c">message</mat-icon>&nbsp;
+          <div style="display: flex; align-items: center; width: 90%;"
+               [ngStyle]="{'text-decoration': msg.softdeleted ? 'line-through' : '',
+                  'color': msg.softdeleted ? 'grey' : ''}">
+            <mat-icon [ngStyle]="{'color': msg.softdeleted ? 'grey' : 'green'}">message</mat-icon>&nbsp;
             <span>{{msg.message}}</span>
-          </div>          
-          <button mat-raised-button color="warn"
-                  (click)="delete_message(msg.uid)" [disabled]="busy">
-            <mat-icon style="margin: 0 -5px 0 -10px;">delete_forever</mat-icon>&nbsp;
+          </div>
+          <button mat-raised-button *ngIf="!isDelete"
+                  (click)="selection.toggle(msg.uid); remove_message([msg.uid]);" [disabled]="busy">
+            <mat-icon style="margin: 0 -5px 0 -10px;">delete</mat-icon>&nbsp;
             Remove
           </button>
+
+          <button mat-raised-button *ngIf="isDelete" color="warn"
+                  (click)="selection.toggle(msg.uid); remove_message([msg.uid]);" [disabled]="busy">
+            <mat-icon style="margin: 0 -5px 0 -10px;">delete_forever</mat-icon>&nbsp;
+            Delete
+          </button>
+
         </div>
       </mat-card-title>
-      <mat-card-subtitle> &bull; Sent {{msg.senton | fromNow}}</mat-card-subtitle>
-      
-      <mat-card-content style="margin-top:10px;">
-        <mat-card>
+      <mat-card-subtitle *ngIf="!isInbox">
+        &bull;&nbsp;{{msg.sentby == currentUser.userId ? 'You' : msg.sentby}} sent {{msg.senton | fromNow}}
+        <span *ngIf="msg.softdeleted && msg.deletedby" style="color:red;">
+          &bull;&nbsp;{{msg.deletedby == currentUser.userId ? 'You' : msg.deletedby}} deleted {{msg.deletedon | fromNow}}
+        </span>
+      </mat-card-subtitle>      
+      <mat-card-subtitle *ngIf="isInbox && !msg.softdeleted"> &bull; {{msg.senton | fromNow}} from {{msg.sentby}}</mat-card-subtitle>
+
+      <mat-card-content style="margin-top:10px;" *ngIf="!isInbox">
+        <mat-card [ngStyle]="{'background-color': selection.isSelected(msg.uid) ? '#e7f0fd' : 'white' }">
           <mat-card-header>
             <mat-card-title style="margin-left: -15px; margin-top: -10px;">Sent to</mat-card-title>
           </mat-card-header>
 
           <mat-chip-list>
             <mat-chip *ngFor="let sentTo of msg.sentTo"
-                      [ngClass]="{'sent-msg-success': sentTo.status === 'Success', 'sent-msg-fail' : sentTo.status === 'Fail' }">
-              <mat-icon>person</mat-icon>&nbsp;
-              {{sentTo.appUser.userId}} <span *ngIf="sentTo.appUser.nickName">&nbsp;&bull;&nbsp;{{sentTo.appUser.nickName}}</span>                            
+                      [ngClass]="{'sent-msg-success': sentTo.status === 'Success' && !msg.softdeleted,
+                        'sent-msg-fail' : sentTo.status === 'Fail && !msg.softdeleted',
+                        'softdeleted' : sentTo.softdeleted || msg.softdeleted }">
+              <span [ngClass]="{'strike': sentTo.softdeleted || msg.softdeleted }" class="chip">
+                <mat-icon>person</mat-icon>&nbsp;
+                {{sentTo.appUser.userId}}
+                <span *ngIf="sentTo.appUser.nickName">&nbsp;&bull;&nbsp;{{sentTo.appUser.nickName}}</span>
+              </span>
+              <span *ngIf="sentTo.softdeleted" style="color:red;">(Deleted {{sentTo.deletedon | fromNow}})</span>
               <span *ngIf="sentTo.status == 'Fail'">&nbsp;(Failed)</span>
             </mat-chip>
           </mat-chip-list>
@@ -45,12 +76,33 @@
 
 <style>
   .mat-chip.sent-msg-success {
-    background-color:green;
-    color:white;
+    background-color: green;
+    color: white;
   }
 
   .mat-chip.sent-msg-fail {
     background-color: #f44336;
     color: white;
   }
+
+  .mat-chip.softdeleted {
+    background-color: lightgray;
+    color: black;    
+    /*[ngStyle]="{'text-decoration': sentTo.softdeleted ? 'line-through' : 'none' }"*/
+  }
+
+  span.chip {
+    display: flex;
+    align-items: flex-end;
+  }
+
+  .strike {
+    text-decoration: line-through;
+  }
+
+  .mat-card.selected {
+    border: 2px dashed rgb(63, 81, 181);
+    background-color: #e7f0fd;
+  }
+
 </style>

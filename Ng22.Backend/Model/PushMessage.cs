@@ -31,12 +31,18 @@ namespace Ng22.Backend
         public Guid Uid { get; set; }
         public string message { get; set; }        
         public DateTime senton { get; set; }
+        public string sentby { get; set; }
+        public bool softdeleted { get; set; }
+        public string deletedby { get; set; }
+        public DateTime? deletedon { get; set; }
         public List<SentTo> SentTo { get; set; }
     }
     public class SentTo
     {
         public AppUserDm AppUser { get; set; }
         public string status { get; set; }
+        public bool softdeleted { get; set; }
+        public DateTime? deletedon { get; set; }
     }
 
     [Table("sent_message")]
@@ -49,6 +55,9 @@ namespace Ng22.Backend
         public string message { get; set; }
         public string sentby { get; set; }
         public DateTime senton { get; set; }
+        public bool softdeleted { get; set; }
+        public string deletedby { get; set; }
+        public DateTime? deletedon { get; set; }
         public ICollection<SentMessageSubscriberRelationDm> SentTo { get; set; }
     }
 
@@ -74,6 +83,11 @@ namespace Ng22.Backend
 
         [Column(TypeName = "char(7)")]
         public string status { get; set; }
+
+        [Column(TypeName = "tinyint")]
+        public bool softdeleted { get; set; }
+        public string deletedby { get; set; }
+        public DateTime? deletedon { get; set; }
     }
 
     public class SendMessageVm
