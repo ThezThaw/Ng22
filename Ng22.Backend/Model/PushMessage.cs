@@ -26,6 +26,15 @@ namespace Ng22.Backend
         public AppUserDm AppUser { get; set; }
     }
 
+    public class SentMessageFilter
+    {
+        public bool isInbox { get; set; }
+        public string startFrom { get; set; }
+        public List<string> sentFrom { get; set; }
+        public List<string> sentTo { get; set; }
+        public string msg { get; set; }
+    }
+
     public class SentMessageVm
     {
         public Guid Uid { get; set; }

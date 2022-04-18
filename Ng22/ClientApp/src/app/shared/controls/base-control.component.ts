@@ -13,6 +13,7 @@ export abstract class BaseControlComponent implements OnInit, OnDestroy {
   public skipService: boolean = false;
   public loading: boolean = false;
 
+  @Input() placeholder: string = '';
   @Input() fg: FormGroup;
   @Input() name: string;
   @Input() public label!: string;

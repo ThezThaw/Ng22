@@ -34,11 +34,11 @@ namespace Ng22.Controllers
             return Ok(await pushMsgResource.SendMessage(sm, GetCurrentUserId()));
         }
 
-        [HttpPost("GetSentMessage/{isInbox}")]
+        [HttpPost("GetSentMessage")]
         [Authorize(AuthenticationSchemes = "L1")]
-        public async Task<IActionResult> GetSentMessage(bool isInbox)
+        public async Task<IActionResult> GetSentMessage(SentMessageFilter filter)
         {
-            return Ok(await pushMsgResource.GetSentMessage(isInbox, GetCurrentUserId()));
+            return Ok(await pushMsgResource.GetSentMessage(filter, GetCurrentUserId()));
         }
 
         [HttpPost("DeleteMessage/{softdelete}/{isInbox}")]

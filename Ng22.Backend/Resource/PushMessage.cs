@@ -49,13 +49,40 @@ namespace Ng22.Backend.Resource
             }
         }
 
-        public async Task<List<SentMessageVm>> GetSentMessage(bool isInbox, string userId)
+        private DateTime GetStartDate(string filter)
+        {
+            if (string.IsNullOrEmpty(filter)) return DateTime.MinValue;
+
+            var f = filter.Split(',');
+            if (f[1] == "D")
+            {
+                return DateTime.UtcNow.NowByTimezone(Config.Timezone).AddDays(Convert.ToDouble(f[0]));
+            }
+            else if (f[1] == "M")
+            {
+                return DateTime.UtcNow.NowByTimezone(Config.Timezone).AddMonths(Convert.ToInt32(f[0]));
+            }
+            else if (f[1] == "Y")
+            {
+                return DateTime.UtcNow.NowByTimezone(Config.Timezone).AddYears(Convert.ToInt32(f[0]));
+            }
+            return DateTime.MinValue;
+        }
+
+        public async Task<List<SentMessageVm>> GetSentMessage(SentMessageFilter filter, string userId)
         {
             var lstSentMessage = new List<SentMessageVm>();
-            var lstRaw = await pushMsgDbService.GetSentMessageByUserId(x => x.Subscriber.AppUser.alive && (isInbox ? x.Subscriber.AppUser.userId == userId : (userId == Const.AdminUserId ? true : x.SentMessage.sentby == userId)));
+            var sd = GetStartDate(filter.startFrom);
+            filter.sentFrom = filter.sentFrom ?? new List<string>();
+            filter.sentTo = filter.sentTo ?? new List<string>();
+            //var lstRaw = await pushMsgDbService.GetSentMessageByUserId(x => x.Subscriber.AppUser.alive && (filter.isInbox ? x.Subscriber.AppUser.userId == userId : (userId == Const.AdminUserId ? true : x.SentMessage.sentby == userId)));
 
-            if (isInbox)
+            if (filter.isInbox)
             {
+                var lstRaw = await pushMsgDbService.GetSentMessageByUserId(x => x.Subscriber.AppUser.alive && 
+                                    x.Subscriber.AppUser.userId == userId && 
+                                    (filter.sentFrom.Any() ? filter.sentFrom.Contains(x.SentMessage.sentby) : true) &&
+                                    x.SentMessage.senton.Date >= sd.Date);
                 var lst = await lstRaw.Where(x => x.status == Const.SentStatus.Success && !x.softdeleted).ToListAsync();
                 var msgGroup = lst.Where(x => x.Subscriber.AppUser.userId == userId && !x.SentMessage.softdeleted).GroupBy(x => new { x.SentMessage.message, x.SentMessage.senton, x.SentMessage.sentby, x.SentMessage.Uid }).ToList();
                 foreach (var msg in msgGroup)
@@ -71,12 +98,21 @@ namespace Ng22.Backend.Resource
             }
             else
             {
+                if (userId != Const.AdminUserId)
+                {
+                    filter.sentFrom.Add(userId);
+                }
+
+                var lstRaw = await pushMsgDbService.GetSentMessageByUserId(x => x.Subscriber.AppUser.alive &&
+                                    (userId == Const.AdminUserId ? true : x.SentMessage.sentby == userId) &&
+                                    (filter.sentFrom.Any() ? filter.sentFrom.Contains(x.SentMessage.sentby) : true) &&
+                                    x.SentMessage.senton.Date >= sd.Date);
                 var lst = await lstRaw.ToListAsync();
-                var msgGroup = lst.GroupBy(x => new 
-                { 
-                    x.SentMessage.Uid, 
-                    x.SentMessage.message, 
-                    x.SentMessage.senton, 
+                var msgGroup = lst.GroupBy(x => new
+                {
+                    x.SentMessage.Uid,
+                    x.SentMessage.message,
+                    x.SentMessage.senton,
                     x.SentMessage.sentby,
                     x.SentMessage.softdeleted,
                     x.SentMessage.deletedby,
@@ -97,10 +133,9 @@ namespace Ng22.Backend.Resource
                         SentTo = new List<SentTo>()
                     };
                     var userGroup = mg.GroupBy(x => new { x.Subscriber.AppUser.userId, x.Subscriber.AppUser.nickName }).ToList();
-                    foreach (var ug in userGroup)
+                    foreach (var ug in userGroup.Where(x => filter.sentTo.Any() ? filter.sentTo.Contains(x.Key.userId) : true))
                     {
                         var status = ug.Any(x => x.status == Const.SentStatus.Success) ? Const.SentStatus.Success : Const.SentStatus.Fail;
-
                         sm.SentTo.Add(new SentTo()
                         {
                             AppUser = new AppUserDm()
@@ -115,7 +150,7 @@ namespace Ng22.Backend.Resource
                         });
                     }
 
-                    if (userId == Const.AdminUserId)
+                    if (userId == Const.AdminUserId && sm.SentTo.Any())
                     {
                         lstSentMessage.Add(sm);
                     }
@@ -126,7 +161,7 @@ namespace Ng22.Backend.Resource
                             lstSentMessage.Add(sm);
                         }
                     }
-                    
+
                 }
             }
             return lstSentMessage.OrderByDescending(x => x.senton).ToList();
@@ -236,6 +271,6 @@ namespace Ng22.Backend.Resource
         Task<StatusResult<bool>> ClientRegistration(SubscriberInfoVm vm, string userId);
         Task<StatusResult<bool>> SendMessage(SendMessageVm sm, string sentBy);
         Task<StatusResult<bool>> DeleteMessage(List<Guid> msgUids, bool isInbox, bool softdelete, string userId);
-        Task<List<SentMessageVm>> GetSentMessage(bool isInbox, string userId);
+        Task<List<SentMessageVm>> GetSentMessage(SentMessageFilter filter, string userId);
     }
 }

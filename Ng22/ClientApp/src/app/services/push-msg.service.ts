@@ -1,6 +1,7 @@
 import { HttpClient, HttpParams } from "@angular/common/http";
 import { Injectable } from "@angular/core";
 import { Observable } from "rxjs";
+import { SentMessageFilter } from "../shared/models/push-msg.data";
 import { AppConfigService } from "./appconfig.service";
 
 @Injectable({
@@ -20,8 +21,8 @@ export class PushMessageService {
     return this.http.post<any>(`${this.appCfgSvc.cfg["baseUrl"]}api/PushMessage/SendMessage`, msg);
   }
 
-  GetSentMessage(isInbox: boolean): Observable<any> {
-    return this.http.post<any>(`${this.appCfgSvc.cfg["baseUrl"]}api/PushMessage/GetSentMessage/${isInbox}`, undefined);
+  GetSentMessage(filter: SentMessageFilter): Observable<any> {
+    return this.http.post<any>(`${this.appCfgSvc.cfg["baseUrl"]}api/PushMessage/GetSentMessage`, filter);
   }
 
   DeleteMessage(uids: string[], isInbox: boolean, softdelete: boolean): Observable<any> {

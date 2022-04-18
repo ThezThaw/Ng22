@@ -17,11 +17,24 @@ export class AppUserService {
     this.url = `${this.appCfgSvc.cfg["baseUrl"]}api/appuser/`;
   }
 
-  getUserList(filter: string = '', excludeAr: boolean = false, onlySubscriber: boolean = false): Observable<AppUser[]> {
+  getUserList(filter: string = '', excludeAr: boolean = false): Observable<AppUser[]> {
+    return this.get(filter, excludeAr, false);
+  }
+
+  getSubscriberList(filter: string = '', excludeAr: boolean = false): Observable<AppUser[]> {
+    return this.get(filter, excludeAr, true, false);
+  }
+
+  getAllSubscriberList(filter: string = '', excludeAr: boolean = false): Observable<AppUser[]> {
+    return this.get(filter, excludeAr, true, true);
+  }
+
+  private get(filter: string = '', excludeAr: boolean = false, onlySubscriber: boolean = false, includeCurrentUser: boolean = false): Observable<AppUser[]> {
     var params = new HttpParams()
       .set('filter', filter)
       .set('excludeAr', excludeAr)
-      .set('onlySubscriber', onlySubscriber);
+      .set('onlySubscriber', onlySubscriber)
+      .set('includeCurrentUser', includeCurrentUser);
     return this.http.get<AppUser[]>(`${this.url}GetUserList/`,
       { params: params });
   }

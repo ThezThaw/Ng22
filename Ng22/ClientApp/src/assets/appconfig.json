@@ -1,3 +1,53 @@
 {
-  "baseUrl": "http://localhost:5000/"
+  "baseUrl": "http://localhost:5000/",
+  "sentMsgFilter": [
+    {
+      "id": 1,
+      "name": "Today",
+      "value": "0,D",
+      "default": true
+    },
+    {
+      "id": 2,
+      "name": "Yesterday",
+      "value": "-1,D",
+      "default": false
+    },
+    {
+      "id": 3,
+      "name": "Last Week",
+      "value": "-7,D",
+      "default": false
+    },
+    {
+      "id": 4,
+      "name": "Last Month",
+      "value": "-1,M",
+      "default": false
+    },
+    {
+      "id": 5,
+      "name": "Last Three Month",
+      "value": "-3,M",
+      "default": false
+    },
+    {
+      "id": 6,
+      "name": "Last Six Month",
+      "value": "-6,M",
+      "default": false
+    },
+    {
+      "id": 7,
+      "name": "Last Year",
+      "value": "-1,Y",
+      "default": false
+    },
+    {
+      "id": 8,
+      "name": "Beginning",
+      "value": "",
+      "default": false
+    }
+  ]
 }

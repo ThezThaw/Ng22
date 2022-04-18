@@ -62,6 +62,11 @@ import { ServiceWorkerModule } from '@angular/service-worker';
 import { environment } from '../environments/environment';
 import { SendMessageComponent } from './push-msg/send-msg.component';
 import { SendMessageHistoryComponent } from './push-msg/send-msg-history.component';
+import { MatDatepickerModule } from '@angular/material/datepicker';
+import { MatNativeDateModule } from '@angular/material/core';
+import { SelectboxComponent } from './shared/controls/selectbox.component';
+import { MatSelectModule } from '@angular/material/select';
+import { SelectboxCheckAllComponent } from './shared/controls/selectbox.chk-all.component';
 
 //https://stackblitz.com/edit/angular-notifier-demo?file=src%2Fapp%2Fapp.module.ts
 const customNotifierOptions: NotifierOptions = {
@@ -129,7 +134,10 @@ const customNotifierOptions: NotifierOptions = {
     MatChipsModule,
     MatButtonToggleModule,
     MatDividerModule,
-    //MatExpansionModule,
+    //MatExpansionModule
+    MatDatepickerModule,
+    MatNativeDateModule,
+    MatSelectModule,
     CommonModule,
   ],
   imports: [
@@ -153,6 +161,8 @@ export class MatModule { }
     CheckboxComponent,
     FromNowPipe,
     ToggleComponent,
+    SelectboxComponent,
+    SelectboxCheckAllComponent,
   ],
   exports: [
     InputboxComponent,
@@ -163,6 +173,8 @@ export class MatModule { }
     CheckboxComponent,
     FromNowPipe,
     ToggleComponent,
+    SelectboxComponent,
+    SelectboxCheckAllComponent,
   ],
   imports: [
     MatModule

@@ -65,7 +65,7 @@ export class SendMessageComponent implements OnInit, OnDestroy {
     this.touch();
     this.cms.focus(this.focusElementId);
 
-    var ssx = this.userSvc.getUserList('',false,true).subscribe(u => {
+    var ssx = this.userSvc.getSubscriberList('', false).subscribe(u => {
       this.dsUser.data = u;
     });
     this.ssx.add(ssx);

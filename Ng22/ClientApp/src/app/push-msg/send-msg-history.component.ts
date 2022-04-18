@@ -4,12 +4,15 @@ import { FormBuilder, FormGroup } from '@angular/forms';
 import { NotifierService } from 'angular-notifier';
 import { Subscription } from 'rxjs';
 import { AuthService } from '../login/module/services/auth.service';
+import { AppUserService } from '../services/app-user.service';
+import { AppConfigService } from '../services/appconfig.service';
 import { PushMessageService } from '../services/push-msg.service';
 import { Const } from '../shared/const';
 import { BottomSheetComponent } from '../shared/controls/bottom-sheet.component';
 import { PopupComponent } from '../shared/controls/popup.component';
 import { AppUser } from '../shared/models/app-user.data';
 import { MissionUserRelation } from '../shared/models/mission.data';
+import { SentMessageFilter } from '../shared/models/push-msg.data';
 import { Header, HeaderButton } from '../shared/models/shared-data.model';
 import { CommonMethodService, HeaderService } from '../shared/service';
 
@@ -30,23 +33,32 @@ export class SendMessageHistoryComponent implements OnInit, OnDestroy {
 
   lst: any[] = [];
   addNew: boolean = false;
-  selected: MissionUserRelation;
+  smFilterSelected: any;
+  lstSmFilter: any[];
+  lstUserFilter: any[];
+
+  isAdmin: boolean;
   currentUser: AppUser;
   selection = new SelectionModel<string>(true, []);
 
   constructor(
+    private appCfgSvc: AppConfigService,
     private ref: ChangeDetectorRef,
+    private fb: FormBuilder,
     private notiSvc: NotifierService,
     private bs: BottomSheetComponent,
     private popup: PopupComponent,
     private hdrSvc: HeaderService,
     private authService: AuthService,
+    public userSvc: AppUserService,
     private pmSvc: PushMessageService) {
 
     var ssx = this.hdrSvc.clickEvent$.subscribe(btn => {
       if (btn && (btn as HeaderButton)?.ownby == Const.CurrentPageSendMessageHistory) this[(btn as HeaderButton)?.func]();
     });
     this.ssx.add(ssx);
+    this.lstSmFilter = this.appCfgSvc.cfg["sentMsgFilter"];
+    this.smFilterSelected = this.lstSmFilter.find(x => x.default);
   }
 
   ngOnDestroy(): void {
@@ -54,8 +66,30 @@ export class SendMessageHistoryComponent implements OnInit, OnDestroy {
   }
 
   ngOnInit(): void {
-    this.authService.getUserInfo().subscribe(x => this.currentUser = x)
-    this.getList();    
+
+    this.fg = this.fb.group({
+      startFrom: [this.smFilterSelected],
+      sentFrom: [],
+      sentTo: [],
+    });
+
+    this.authService.getUserInfo().subscribe(x => {
+      this.currentUser = x;
+      this.isAdmin = this.currentUser.userId == Const.AppUserAdmin;
+    })
+    this.getList();
+
+    //var ssx = this.userSvc.getUserList('', false, false).subscribe(users => {
+    //  this.lstUserFilter = users;
+    //  //this.lstUserFilter = users.map(u => {
+    //  //  return {
+    //  //    'id': u.uid,
+    //  //    'name': u.nickName ? u.nickName : u.userId,
+    //  //    'value': u.userId
+    //  //  }
+    //  //});
+    //});
+    //this.ssx.add(ssx);
   }
 
   new_message() {
@@ -101,8 +135,24 @@ export class SendMessageHistoryComponent implements OnInit, OnDestroy {
     this.hdrSvc.setBusy(busy);
   }
 
+  applyFilter() { 
+    this.getList();
+  }
+
   getList() {
-    var ssx = this.pmSvc.GetSentMessage(this.isInbox).subscribe(x => {
+    var raw = this.fg.getRawValue();
+    let filter: SentMessageFilter = {
+      isInbox: this.isInbox,
+      startFrom: raw.startFrom.value,
+      sentFrom: raw.sentFrom?.map(x => { return x.userId }),
+      sentTo: raw.sentTo?.map(x => { return x.userId }),
+    };
+    this.setBusy(true);
+    var ssx = this.pmSvc.GetSentMessage(filter).subscribe(x => {
+
+      if (JSON.stringify(this.lst) !== JSON.stringify(x)) {
+        this.selection.clear();
+      }
       this.lst = x;
       this.setHeader();
     });
@@ -111,7 +161,6 @@ export class SendMessageHistoryComponent implements OnInit, OnDestroy {
 
   switchUi() {
     this.addNew = false;
-    this.selected = null;
     this.setHeader();
     this.getList();
   }
@@ -154,7 +203,15 @@ export class SendMessageHistoryComponent implements OnInit, OnDestroy {
       }
     }
 
+    h.btn.push({
+      name: 'Apply Filter',
+      icon: 'filter_list',
+      func: 'applyFilter',
+      ownby: Const.CurrentPageSendMessageHistory
+    });
+
     this.hdrSvc.setHeader(h);
+    this.setBusy(false);
   }
 
   isAllSelected() {
@@ -170,5 +227,13 @@ export class SendMessageHistoryComponent implements OnInit, OnDestroy {
       return;
     }
     this.selection.select(...this.lst.map(x => { return x.uid }));
+  }
+
+  changeToggle() {    
+    //this.selected = {
+    //  'id': this.c.start.value['id'],
+    //  'name': this.c.start.value['name'],
+    //  'code': this.c.start.value['code']
+    //};
   }
 }

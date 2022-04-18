@@ -7,8 +7,7 @@ import { BaseControlComponent } from "./base-control.component";
 })
 
 export class InputboxComponent extends BaseControlComponent {
-  @Input() loading: boolean = false;
-  @Input() placeholder: string = '';
+  @Input() loading: boolean = false;  
   @Input() selectOnFocus: boolean = true;
   @Input() icon: string;
   @Input() max?: number = null;

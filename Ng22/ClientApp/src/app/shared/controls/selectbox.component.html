@@ -1,0 +1,24 @@
+<div class="form-group">
+  <mat-form-field appearance="outline" floatLabel="always" [formGroup]="fg" class="col">
+    <mat-label [style.fontSize.px]="LibConst.LabelSize">{{label}}</mat-label>
+    <mat-select [formControlName]="name" name="name" [multiple]="multi"
+                [compareWith]="setSelected"
+                [placeholder]="placeholder"
+                [style.fontSize.px]="LibConst.ValueSize"
+                style="margin:-10px 0 0 0;height:30px;padding:0">
+
+      <selectbox-chkall *ngIf="multi" [selected]="fg.get(name)" [list]="list"></selectbox-chkall>
+      <mat-option *ngFor="let lst of list" [value]="lst">
+        {{lst[displayField]}}
+      </mat-option>
+    </mat-select>
+  </mat-form-field>
+</div>
+
+<style>
+  selectbox .mat-form-field-appearance-outline .mat-form-field-infix {    
+    padding-bottom:0 !important;
+  }
+
+  /*.mat-form-field-appearance-outline .mat-form-field-infix*/
+</style>

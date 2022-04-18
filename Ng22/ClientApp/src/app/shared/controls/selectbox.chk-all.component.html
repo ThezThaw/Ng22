@@ -1,0 +1,15 @@
+<mat-checkbox class="mat-option" [indeterminate]="isIndeterminate()" matRipple color="primary"
+              [checked]="isChecked()" (click)="$event.stopPropagation()"
+              (change)="toggleSelection($event)">              
+  Select All
+</mat-checkbox>
+
+<style>
+  selectbox-chkall .mat-checkbox,
+  selectbox-chkall .mat-checkbox-layout,
+  selectbox-chkall .mat-checkbox-label {
+    width: 100% !important;
+  }
+</style>
+
+
